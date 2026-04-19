@@ -45,15 +45,16 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json()
-    const { title, excerpt, content, category, documentType, imageUrl, date } = body
-    
+    const { title, excerpt, content, category, documentType, imageUrl, date, linkUrl } = body
+
     const updateData: any = {}
     if (title !== undefined) updateData.title = title
     if (excerpt !== undefined) updateData.excerpt = excerpt
     if (content !== undefined) updateData.content = content
     if (category !== undefined) updateData.category = category
     if (documentType !== undefined) updateData.documentType = documentType
-    if (imageUrl !== undefined) updateData.imageUrl = imageUrl
+    if (imageUrl !== undefined) updateData.imageUrl = imageUrl || null
+    if (linkUrl !== undefined) updateData.linkUrl = linkUrl || null
     if (date !== undefined) updateData.date = date ? new Date(date) : undefined
     
     const archive = await db.archive.update({

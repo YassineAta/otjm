@@ -51,10 +51,9 @@ export async function GET(request: NextRequest) {
     try {
         // Fetch all archive records
         const archives = await db.archive.findMany({
-            // Include the related User (author) data, selecting only necessary fields
             include: {
                 author: {
-                    select: { name: true, id: true }
+                    select: { id: true, name: true, email: true }
                 }
             },
             orderBy: {

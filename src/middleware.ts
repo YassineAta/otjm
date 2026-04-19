@@ -3,7 +3,7 @@ import { getToken } from 'next-auth/jwt'
 
 const SLUG = process.env.ADMIN_SLUG || 'admin'
 const ADMIN_ROLES = ['admin', 'superadmin']
-const PUBLIC_API = ['/api/auth', '/api/contact', '/api/newsletter', '/api/news', '/api/archives']
+const PUBLIC_API = ['/api/auth', '/api/contact', '/api/newsletter', '/api/news', '/api/archives', '/api/setup']
 
 interface Token { role?: string; id?: string; email?: string }
 

@@ -13,7 +13,7 @@ const SECTIONS = [
         <p>
           L&apos;Organisation Tunisienne des Jeunes Médecins (OTJM), association à but non lucratif dont le
           siège est situé Rue 9 avril, Bab Saadoun, Tunis 1002, est responsable du traitement des données
-          personnelles collectées via le site <strong>otjm.shop</strong>.
+          personnelles collectées via le site <strong>otjm.tn</strong>.
         </p>
         <p className="mt-3">
           Contact : <a href="mailto:otjm.national@gmail.com" className="underline underline-offset-2 hover:text-[var(--otjm-red)] transition-colors">otjm.national@gmail.com</a>
