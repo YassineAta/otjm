@@ -56,14 +56,13 @@ export async function POST(request: NextRequest) {
       content,
       category,
       imageUrl,
-      authorId,
       published,
       sourceUrl
     } = body
 
-    if (!title || !authorId) {
+    if (!title) {
       return NextResponse.json(
-        { error: 'Missing required fields (title, authorId)' },
+        { error: 'Missing required field (title)' },
         { status: 400 }
       )
     }
@@ -76,7 +75,7 @@ export async function POST(request: NextRequest) {
         category: category || null,
         imageUrl: imageUrl || null,
         sourceUrl: sourceUrl || null,
-        authorId,
+        authorId: auth.session.user.id,
         published: published ?? false
       },
       include: {

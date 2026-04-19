@@ -7,15 +7,15 @@ export async function POST(request: NextRequest) {
   if (auth.error) return auth.error
   try {
     const body = await request.json()
-    const { title, excerpt, content, category, documentType, imageUrl, authorId, date, linkUrl } = body
-    
-    if (!title || !excerpt || !content || !category || !documentType || !authorId) {
+    const { title, excerpt, content, category, documentType, imageUrl, date, linkUrl } = body
+
+    if (!title || !excerpt || !content || !category || !documentType) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       )
     }
-    
+
     const archive = await db.archive.create({
       data: {
         title,
@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
         category,
         documentType,
         imageUrl: imageUrl || null,
-        authorId,
+        authorId: auth.session.user.id,
         date: date ? new Date(date) : new Date(),
         linkUrl: linkUrl || null
       },

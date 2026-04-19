@@ -1,5 +1,6 @@
 import { getServerSession } from 'next-auth'
 import { NextResponse } from 'next/server'
+import { authOptions } from '@/app/api/auth/[...nextauth]/options'
 
 type AuthOk = { session: { user: { id: string; role: string; email: string } }; error?: never }
 type AuthErr = { session?: never; error: NextResponse }
@@ -14,7 +15,7 @@ export async function requireAdmin(): Promise<AuthOk | AuthErr> {
   }
 
   try {
-    const session = await getServerSession()
+    const session = await getServerSession(authOptions)
     if (!session?.user) {
       return { error: NextResponse.json({ error: 'Authentication required' }, { status: 401 }) }
     }
