@@ -1,0 +1,101 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  email     String    @unique
+  name      String?
+  role      String    @default("member")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  news      News[]
+  archives  Archive[]
+}
+
+model Membership {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  name          String    @default("")
+  email         String    @unique
+  tier          String
+  status        String    @default("pending")
+  paymentMethod String
+  paymentStatus String    @default("pending")
+  startDate     DateTime
+  endDate       DateTime
+  price         Float
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  memberStatus  String?
+  faculty       String?
+  cin           String?
+  phone         String?
+  dateOfBirth   DateTime?
+}
+
+model News {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  title     String
+  excerpt   String?
+  content   String?
+  category  String?
+  imageUrl  String?
+  sourceUrl String?
+
+  published Boolean  @default(false)
+
+  authorId  String?  @db.ObjectId
+  author    User?    @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model Archive {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  excerpt      String
+  content      String
+  category     String
+  documentType String
+  imageUrl     String?
+  linkUrl      String?
+  date         DateTime @default(now())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  authorId     String   @db.ObjectId
+  author       User     @relation(fields: [authorId], references: [id])
+}
+
+model Contact {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String
+  subject   String
+  message   String
+  status    String   @default("unread")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Newsletter {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  email     String   @unique
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Admin {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  email            String   @unique
+  hashedPassword   String
+  name             String?
+  role             String   @default("superadmin")
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
