@@ -87,7 +87,10 @@ export function SiteFooter() {
 
         <div className="border-t border-white/10 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-white/50">
           <span>{t.footer.copyright}</span>
-          <span>{t.footer.rights}</span>
+          <div className="flex items-center gap-5">
+            <Link href="/privacy" className="hover:text-white transition-colors">{t.footer.privacy}</Link>
+            <span>{t.footer.rights}</span>
+          </div>
         </div>
       </div>
     </footer>

@@ -348,10 +348,12 @@ function NewsModal({ item, open, onClose }: { item: NewsItem | null; open: boole
 function SignupModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [step, setStep] = useState<'form' | 'success'>('form')
   const [submitting, setSubmitting] = useState(false)
+  const [consentChecked, setConsentChecked] = useState(false)
   const { t } = useLanguage()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!consentChecked) return
     setSubmitting(true)
     const form = e.target as HTMLFormElement
     const email = (form.elements.namedItem('email') as HTMLInputElement)?.value
@@ -361,7 +363,7 @@ function SignupModal({ open, onClose }: { open: boolean; onClose: () => void }) 
   }
 
   return (
-    <Dialog open={open} onOpenChange={() => { setStep('form'); onClose() }}>
+    <Dialog open={open} onOpenChange={() => { setStep('form'); setConsentChecked(false); onClose() }}>
       <DialogContent className="max-w-md font-body">
         <AnimatePresence mode="wait">
           {step === 'form' ? (
@@ -384,7 +386,23 @@ function SignupModal({ open, onClose }: { open: boolean; onClose: () => void }) 
                     {t.home.statuses.map((s) => <option key={s}>{s}</option>)}
                   </select>
                 </div>
-                <Button type="submit" disabled={submitting} className="w-full mt-2 font-semibold" style={{ background: 'var(--otjm-red)', color: '#fff' }}>
+                <div className="flex items-start gap-2.5 pt-1">
+                  <input
+                    id="newsletter-consent"
+                    type="checkbox"
+                    checked={consentChecked}
+                    onChange={(e) => setConsentChecked(e.target.checked)}
+                    className="mt-0.5 h-4 w-4 shrink-0 cursor-pointer accent-[var(--otjm-red)]"
+                  />
+                  <label htmlFor="newsletter-consent" className="text-xs text-muted-foreground cursor-pointer leading-relaxed">
+                    {t.home.newsletterConsentPre}
+                    <Link href="/privacy" target="_blank" className="underline underline-offset-2 hover:text-[var(--otjm-red)] transition-colors" onClick={(e) => e.stopPropagation()}>
+                      {t.home.newsletterConsentLink}
+                    </Link>
+                    {t.home.newsletterConsentPost}
+                  </label>
+                </div>
+                <Button type="submit" disabled={submitting || !consentChecked} className="w-full mt-1 font-semibold" style={{ background: 'var(--otjm-red)', color: '#fff' }}>
                   {submitting ? t.home.subscribing : t.home.subscribe}
                 </Button>
                 <p className="text-xs text-muted-foreground text-center">{t.home.noSpam}</p>

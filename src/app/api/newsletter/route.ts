@@ -17,11 +17,11 @@ export async function POST(req: NextRequest) {
 
     const existing = await db.newsletter.findUnique({ where: { email } })
     if (existing) {
-      await db.newsletter.update({ where: { email }, data: { active: true } })
+      await db.newsletter.update({ where: { email }, data: { active: true, consentGivenAt: new Date() } })
       return NextResponse.json({ ok: true })
     }
 
-    await db.newsletter.create({ data: { email, active: true } })
+    await db.newsletter.create({ data: { email, active: true, consentGivenAt: new Date() } })
     return NextResponse.json({ ok: true }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Failed to subscribe' }, { status: 500 })

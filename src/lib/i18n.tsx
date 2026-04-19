@@ -30,6 +30,7 @@ const fr = {
     pressDesc: 'Pour les demandes médias et communiqués officiels, contactez notre service presse.',
     copyright: '© 2025–2026 OTJM — Organisation Tunisienne des Jeunes Médecins',
     rights: 'Tous droits réservés',
+    privacy: 'Politique de confidentialité',
   },
   categories: {
     protests: 'Protestation',
@@ -201,6 +202,9 @@ const fr = {
     menuLabel: 'Menu',
     darkMode: 'Mode sombre',
     lightMode: 'Mode clair',
+    newsletterConsentPre: "J'accepte la ",
+    newsletterConsentLink: 'politique de confidentialité',
+    newsletterConsentPost: " et consens au traitement de mon adresse email par l'OTJM.",
   },
 }
 
@@ -230,6 +234,7 @@ const ar: typeof fr = {
     pressDesc: 'للطلبات الإعلامية والبيانات الرسمية، تواصل مع مكتب الإعلام لدينا.',
     copyright: '© 2025–2026 OTJM — المنظمة التونسية للأطباء الشبان',
     rights: 'جميع الحقوق محفوظة',
+    privacy: 'سياسة الخصوصية',
   },
   categories: {
     protests: 'احتجاج',
@@ -401,6 +406,9 @@ const ar: typeof fr = {
     menuLabel: 'القائمة',
     darkMode: 'الوضع الداكن',
     lightMode: 'الوضع الفاتح',
+    newsletterConsentPre: 'أوافق على ',
+    newsletterConsentLink: 'سياسة الخصوصية',
+    newsletterConsentPost: ' وأوافق على معالجة بريدي الإلكتروني من قِبَل OTJM.',
   },
 }
 
