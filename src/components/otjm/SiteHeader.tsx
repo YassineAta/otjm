@@ -68,6 +68,13 @@ export function SiteHeader({ isDark, onToggleDark, onSignupClick }: Props) {
           <Button asChild size="sm" className="hidden md:inline-flex bg-white text-[var(--otjm-red)] font-bold hover:bg-white/90">
             <Link href="/membership">{t.header.join}</Link>
           </Button>
+          <button
+            onClick={toggleLang}
+            aria-label={`Switch to ${lang === 'fr' ? 'Arabic' : 'French'}`}
+            className="md:hidden flex items-center justify-center w-10 h-10 rounded-full text-xs font-bold text-white/70 hover:text-white hover:bg-white/10 transition-colors border border-white/20"
+          >
+            {t.header.langToggle}
+          </button>
           <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-white p-2 rounded-md hover:bg-white/10" aria-label={t.header.menuLabel}>
             {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>

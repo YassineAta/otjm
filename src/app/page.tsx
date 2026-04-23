@@ -61,7 +61,7 @@ const BADGE_BG: Record<Category, string> = {
   announcements: 'border border-amber-400/30', updates: 'border border-slate-400/30',
 }
 
-const HERO_IMAGES = ['/otjmlogo.jpg', '/otjm.jpg', '/otjmlogo.jpg']
+const HERO_IMAGES = ['/otjmlogo.jpg', '/otjm.jpg']
 
 const CATEGORY_COUNTS: Record<string, number> = { all: MOCK_NEWS.length }
 MOCK_NEWS.forEach((n) => { CATEGORY_COUNTS[n.category] = (CATEGORY_COUNTS[n.category] || 0) + 1 })
