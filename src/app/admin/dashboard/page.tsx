@@ -80,7 +80,7 @@ export default function AdminDashboard() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <RefreshCw className="w-8 h-8 animate-spin text-red-600 mx-auto mb-3" />
+          <RefreshCw className="w-8 h-8 animate-spin text-[var(--otjm-red)] mx-auto mb-3" />
           <p className="text-gray-500 text-sm">Chargement...</p>
         </div>
       </div>
@@ -123,7 +123,7 @@ export default function AdminDashboard() {
               <Button variant="outline" size="sm" onClick={() => window.open('/', '_blank')} className="text-gray-600">
                 <Eye className="w-3.5 h-3.5 mr-1.5" /> Voir le site
               </Button>
-              <Button onClick={handleLogout} variant="ghost" size="sm" className="text-red-600 hover:bg-red-50">
+              <Button onClick={handleLogout} variant="ghost" size="sm" className="text-[var(--otjm-red)] hover:bg-[var(--otjm-red)]/5">
                 <LogOut className="w-3.5 h-3.5 mr-1.5" /> Déconnexion
               </Button>
             </div>
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
                   </div>
                   <span className="text-xs font-bold text-gray-400">{a.count}</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 group-hover:text-red-600 transition-colors">{a.label}</h3>
+                <h3 className="font-semibold text-gray-900 group-hover:text-[var(--otjm-red)] transition-colors">{a.label}</h3>
                 <p className="text-xs text-gray-500 mt-0.5">{a.desc}</p>
               </CardContent>
             </Card>
@@ -201,8 +201,8 @@ export default function AdminDashboard() {
                     {stats.recentMembers.map((m: any) => (
                       <div key={m.id} className="flex items-center justify-between py-3">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center">
-                            <UserCheck className="w-4 h-4 text-red-600" />
+                          <div className="w-8 h-8 bg-[var(--otjm-red)]/5 rounded-full flex items-center justify-center">
+                            <UserCheck className="w-4 h-4 text-[var(--otjm-red)]" />
                           </div>
                           <div>
                             <p className="text-sm font-medium text-gray-900">{m.name || 'Sans nom'}</p>

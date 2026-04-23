@@ -275,7 +275,7 @@ export default function ArchiveManagement() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--otjm-red)] mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement des archives...</p>
         </div>
       </div>
@@ -292,7 +292,7 @@ export default function ArchiveManagement() {
               <Button
                 onClick={() => router.push('/admin/dashboard')}
                 variant="outline"
-                className="text-red-600 border-red-200 hover:bg-red-50"
+                className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour
@@ -301,7 +301,7 @@ export default function ArchiveManagement() {
             </div>
             <Button
               onClick={() => setShowAddModal(true)}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Ajouter une archive
@@ -329,7 +329,7 @@ export default function ArchiveManagement() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Toutes les catégories</option>
                   <option value="protests">Protestations</option>
@@ -384,7 +384,7 @@ export default function ArchiveManagement() {
                             <span>{new Date(item.date).toLocaleDateString('fr-FR')}</span>
                           </div>
                           {item.linkUrl && (
-                            <div className="flex items-center gap-1 text-red-600">
+                            <div className="flex items-center gap-1 text-[var(--otjm-red)]">
                                 <Link className="w-4 h-4" />
                                 <span>Lien</span>
                             </div>
@@ -518,7 +518,7 @@ export default function ArchiveManagement() {
             </div>
 
             <div className="flex gap-2 pt-4">
-              <Button type="submit" className="bg-red-600 hover:bg-red-700">
+              <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 {showEditModal ? 'Mettre à jour l\'archive' : 'Créer l\'archive'}
               </Button>
               <Button
@@ -546,7 +546,7 @@ export default function ArchiveManagement() {
             <div className="flex items-center gap-4 text-sm text-gray-500 border-b pb-3">
 
               {/* Category Badge (Déclarations) */}
-              <Badge variant="default" className="bg-red-100 text-red-800 hover:bg-red-100">
+              <Badge variant="default" className="bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)] hover:bg-[var(--otjm-red)]/10">
                 {categoryLabels[selectedArchive.category as keyof typeof categoryLabels]}
               </Badge>
 
@@ -573,7 +573,7 @@ export default function ArchiveManagement() {
                   href={selectedArchive.linkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-1 text-red-600 hover:text-red-700 font-medium"
+                  className="flex items-center gap-1 text-[var(--otjm-red)] hover:text-[var(--otjm-red)] font-medium"
                 >
                   <Link className="w-4 h-4" />
                   Voir le lien externe

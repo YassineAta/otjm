@@ -59,7 +59,7 @@ const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'bg-green-100 text-green-800'
       case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'expired': return 'bg-red-100 text-red-800'
+      case 'expired': return 'bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)]'
       default: return 'bg-gray-100 text-gray-800'
     }
 }
@@ -389,7 +389,7 @@ export default function MemberManagement() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--otjm-red)] mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement des membres...</p>
         </div>
       </div>
@@ -405,7 +405,7 @@ export default function MemberManagement() {
               <Button
                 onClick={() => router.push('/admin/dashboard')}
                 variant="outline"
-                className="text-red-600 border-red-200 hover:bg-red-50"
+                className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour
@@ -417,14 +417,14 @@ export default function MemberManagement() {
                  <Button
                     onClick={() => setShowBulkUploadModal(true)}
                     variant="outline"
-                    className="border-red-600 text-red-600 hover:bg-red-50"
+                    className="border-[var(--otjm-red)] text-[var(--otjm-red)] hover:bg-[var(--otjm-red)]/5"
                   >
                     <Upload className="w-4 h-4 mr-2" />
                     Importer (Bulk)
                   </Button>
                  <Button
                     onClick={() => setShowAddMemberModal(true)}
-                    className="bg-red-600 hover:bg-red-700"
+                    className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]"
                   >
                     <Plus className="w-4 h-4 mr-2" />
                     Ajouter un Membre
@@ -451,7 +451,7 @@ export default function MemberManagement() {
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Tous les statuts</option>
                   <option value="active">Actif</option>
@@ -461,7 +461,7 @@ export default function MemberManagement() {
                 <select
                   value={tierFilter}
                   onChange={(e) => setTierFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Tous les types</option>
                   <option value="student">Étudiant</option>
@@ -702,7 +702,7 @@ export default function MemberManagement() {
 
 
             <div className="flex gap-2 pt-4">
-              <Button type="submit" className="bg-red-600 hover:bg-red-700">
+              <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 Mettre à jour
               </Button>
               <Button type="button" variant="outline" onClick={() => { setShowEditModal(false); setSelectedMember(null); }}>
@@ -717,7 +717,7 @@ export default function MemberManagement() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle className='flex items-center gap-2'>
-                <Upload className='w-5 h-5 text-red-600' />
+                <Upload className='w-5 h-5 text-[var(--otjm-red)]' />
                 Importer des Membres (Bulk)
             </DialogTitle>
           </DialogHeader>
@@ -828,7 +828,7 @@ export default function MemberManagement() {
                 {['Externe', 'Interne', 'Resident', 'En instance de thèse'].map(status => (
                     <div key={status} className="flex items-center space-x-2">
                         <RadioGroupItem value={status} id={status} />
-                        <Label htmlFor={status}>{status} (<span className='font-semibold text-red-600'>{(PRICE_MAP[status] || 20)} DT</span>)</Label>
+                        <Label htmlFor={status}>{status} (<span className='font-semibold text-[var(--otjm-red)]'>{(PRICE_MAP[status] || 20)} DT</span>)</Label>
                     </div>
                 ))}
               </RadioGroup>
@@ -838,7 +838,7 @@ export default function MemberManagement() {
                  <div className='col-span-1'>
                     <Label className='font-bold text-lg flex justify-between items-center bg-gray-100 p-2 rounded-md'>
                         <span>Frais d'adhésion:</span>
-                        <span className='text-red-700'>{addFormData.price} DT</span>
+                        <span className='text-[var(--otjm-red)]'>{addFormData.price} DT</span>
                     </Label>
 
                     <input type="hidden" name="tier" value={addFormData.tier} />
@@ -864,7 +864,7 @@ export default function MemberManagement() {
             </div>
 
             <div className="flex gap-2 pt-4">
-              <Button type="submit" className="bg-red-600 hover:bg-red-700">
+              <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 Ajouter le Membre
               </Button>
               <Button

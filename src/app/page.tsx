@@ -22,49 +22,12 @@ type NewsItem = {
   category: Category; date: string; isFeatured?: boolean; imageUrl?: string; sourceUrl?: string
 }
 
-const MOCK_NEWS: NewsItem[] = [
-  {
-    id: '1',
-    title: 'OTJM annonce une grève nationale des jeunes médecins pour le 15 mai',
-    excerpt: "Face à l'inaction des autorités sanitaires, l'OTJM appelle à une cessation collective du travail.",
-    content: "L'Organisation Tunisienne des Jeunes Médecins annonce une grève nationale pour le 15 mai 2026. Cette décision fait suite à des mois de négociations infructueuses avec le Ministère de la Santé.\n\nL'OTJM exige : une révision urgente de la grille salariale, la régularisation des situations contractuelles, et la mise en place de protocoles de sécurité.",
-    category: 'protests', date: '2026-04-15', isFeatured: true, imageUrl: '/otjmlogo.jpg', sourceUrl: 'https://facebook.com/OTJM',
-  },
-  {
-    id: '2', title: 'Déclaration officielle suite à la réunion avec le Ministère de la Santé',
-    excerpt: "L'OTJM publie le compte-rendu de sa rencontre avec les responsables du ministère.",
-    content: "Suite à la réunion tenue le 10 avril, l'OTJM publie le compte-rendu officiel...",
-    category: 'statements', date: '2026-04-10', imageUrl: '/otjmlogo.jpg',
-  },
-  {
-    id: '3', title: 'Ouverture des adhésions 2025–2026 : rejoignez le mouvement',
-    excerpt: "La campagne d'adhésion annuelle est officiellement lancée.",
-    content: "La campagne d'adhésion 2025–2026 est ouverte. Rejoignez vos confrères...",
-    category: 'announcements', date: '2026-04-01', imageUrl: '/otjmlogo.jpg',
-  },
-  {
-    id: '4', title: 'Rapport sur les conditions de travail dans les CHU tunisiens',
-    excerpt: "Une enquête auprès de 1 200 jeunes médecins révèle des manquements graves.",
-    content: "Le rapport révèle des conditions préoccupantes dans 12 CHU tunisiens...",
-    category: 'updates', date: '2026-03-28',
-  },
-  {
-    id: '5', title: 'Communiqué de solidarité avec les internes de Sfax',
-    excerpt: "L'OTJM exprime son plein soutien aux internes du CHU de Sfax.",
-    content: "L'OTJM exprime son plein soutien aux internes du CHU de Sfax...",
-    category: 'statements', date: '2026-03-20',
-  },
-]
-
 const BADGE_BG: Record<Category, string> = {
   protests: 'border border-red-400/30', statements: 'border border-blue-400/30',
   announcements: 'border border-amber-400/30', updates: 'border border-slate-400/30',
 }
 
 const HERO_IMAGES = ['/otjmlogo.jpg', '/otjm.jpg']
-
-const CATEGORY_COUNTS: Record<string, number> = { all: MOCK_NEWS.length }
-MOCK_NEWS.forEach((n) => { CATEGORY_COUNTS[n.category] = (CATEGORY_COUNTS[n.category] || 0) + 1 })
 
 const sectionVariants = stagger
 const charVariant = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0 } }
@@ -427,6 +390,7 @@ function SignupModal({ open, onClose }: { open: boolean; onClose: () => void }) 
 export default function OTJMHome() {
   const [isDark, setIsDark] = useState(true)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [newsItems, setNewsItems] = useState<NewsItem[]>([])
   const [activeSection, setActiveSection] = useState('accueil')
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null)
   const [showNewsModal, setShowNewsModal] = useState(false)
@@ -455,6 +419,26 @@ export default function OTJMHome() {
   ]
 
   useEffect(() => { setMotionMounted(true) }, [])
+
+  useEffect(() => {
+    fetch('/api/news?published=true')
+      .then((r) => r.ok ? r.json() : [])
+      .then((data: Array<Record<string, unknown>>) => {
+        const mapped: NewsItem[] = data.map((n, i) => ({
+          id: String(n.id),
+          title: String(n.title ?? ''),
+          excerpt: String(n.excerpt ?? ''),
+          content: String(n.content ?? ''),
+          category: (n.category as Category) ?? 'updates',
+          date: n.createdAt ? String(n.createdAt).split('T')[0] : '',
+          isFeatured: i === 0,
+          imageUrl: n.imageUrl ? String(n.imageUrl) : undefined,
+          sourceUrl: n.sourceUrl ? String(n.sourceUrl) : undefined,
+        }))
+        setNewsItems(mapped)
+      })
+      .catch(() => {})
+  }, [])
 
   useEffect(() => {
     const id = setInterval(() => setCurrentSlide((s) => (s + 1) % HERO_IMAGES.length), 5000)
@@ -487,7 +471,9 @@ export default function OTJMHome() {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  const filteredNews = newsFilter === 'all' ? MOCK_NEWS : MOCK_NEWS.filter((n) => n.category === newsFilter)
+  const categoryCounts: Record<string, number> = { all: newsItems.length }
+  newsItems.forEach((n) => { categoryCounts[n.category] = (categoryCounts[n.category] || 0) + 1 })
+  const filteredNews = newsFilter === 'all' ? newsItems : newsItems.filter((n) => n.category === newsFilter)
   const featuredItem = filteredNews.find((n) => n.isFeatured) ?? filteredNews[0]
   const rest = filteredNews.filter((n) => n !== featuredItem)
   const sidebarItems = rest.slice(0, 2)
@@ -505,7 +491,7 @@ export default function OTJMHome() {
           <motion.div className="flex gap-16 whitespace-nowrap ml-4"
             animate={{ x: tickerPaused ? undefined : ['0%', '-50%'] }}
             transition={{ duration: 30, repeat: Infinity, ease: 'linear', repeatType: 'loop' }}>
-            {[...Array(2)].flatMap((_, i) => MOCK_NEWS.map((n) => (
+            {[...Array(2)].flatMap((_, i) => newsItems.map((n) => (
               <span key={`${i}-${n.id}`} className="flex items-center gap-2">
                 <span className="w-1 h-1 rounded-full bg-white/60" />{n.title}
               </span>
@@ -684,7 +670,7 @@ export default function OTJMHome() {
                 {(['all', 'protests', 'statements', 'announcements', 'updates'] as const).map((f) => {
                   const isActive = newsFilter === f
                   const cfg = f !== 'all' ? CATEGORIES[f as Category] : null
-                  const count = CATEGORY_COUNTS[f] || 0
+                  const count = categoryCounts[f] || 0
                   return (
                     <button key={f} onClick={() => setNewsFilter(f)}
                       className="relative shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border transition-all duration-200"

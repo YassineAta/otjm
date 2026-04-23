@@ -308,7 +308,7 @@ export default function NewsManagement() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--otjm-red)] mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement des actualités...</p>
         </div>
       </div>
@@ -325,7 +325,7 @@ export default function NewsManagement() {
               <Button
                 onClick={() => router.push('/admin/dashboard')}
                 variant="outline"
-                className="text-red-600 border-red-200 hover:bg-red-50"
+                className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour
@@ -334,7 +334,7 @@ export default function NewsManagement() {
             </div>
             <Button
               onClick={() => setShowAddModal(true)}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]"
             >
               <Plus className="w-4 h-4 mr-2" />
               Ajouter
@@ -363,7 +363,7 @@ export default function NewsManagement() {
                 <select
                   value={categoryFilter}
                   onChange={(e) => setCategoryFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Toutes les catégories</option>
                   <option value="protests">Protestations</option>
@@ -375,7 +375,7 @@ export default function NewsManagement() {
                 <select
                   value={publishedFilter}
                   onChange={(e) => setPublishedFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Tous les statuts</option>
                   <option value="published">Publié</option>
@@ -556,7 +556,7 @@ export default function NewsManagement() {
             </div>
 
             <div className="flex gap-2 pt-4">
-              <Button type="submit" className="bg-red-600 hover:bg-red-700">
+              <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 {showEditModal ? 'Mettre à jour' : 'Créer'}
               </Button>
               <Button
@@ -595,7 +595,7 @@ export default function NewsManagement() {
               <Badge className={selectedNews.published ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
                 {selectedNews.published ? 'Publié' : 'Brouillon'}
               </Badge>
-              <Badge className="bg-red-100 text-red-800">
+              <Badge className="bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)]">
                 {categoryLabels[selectedNews.category as keyof typeof categoryLabels]}
               </Badge>
               <span className="flex items-center gap-1">

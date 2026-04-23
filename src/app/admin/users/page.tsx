@@ -249,7 +249,7 @@ export default function AdminUserManagement() {
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'admin': return 'bg-red-100 text-red-800'
+      case 'admin': return 'bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)]'
       case 'member': return 'bg-blue-100 text-blue-800'
       default: return 'bg-gray-100 text-gray-800'
     }
@@ -267,7 +267,7 @@ export default function AdminUserManagement() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--otjm-red)] mx-auto mb-4"></div>
           <p className="text-gray-600">Chargement des utilisateurs...</p>
         </div>
       </div>
@@ -284,7 +284,7 @@ export default function AdminUserManagement() {
               <Button 
                 onClick={() => router.push('/admin/dashboard')}
                 variant="outline"
-                className="text-red-600 border-red-200 hover:bg-red-50"
+                className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5"
               >
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour
@@ -293,7 +293,7 @@ export default function AdminUserManagement() {
             </div>
             <Button 
               onClick={() => setShowAddModal(true)}
-              className="bg-red-600 hover:bg-red-700"
+              className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]"
             >
               <UserPlus className="w-4 h-4 mr-2" />
               Ajouter un utilisateur
@@ -321,7 +321,7 @@ export default function AdminUserManagement() {
                 <select
                   value={roleFilter}
                   onChange={(e) => setRoleFilter(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Tous les rôles</option>
                   <option value="admin">Administrateurs</option>
@@ -368,7 +368,7 @@ export default function AdminUserManagement() {
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
                               {user.role === 'admin' ? (
-                                <Shield className="w-5 h-5 text-red-600" />
+                                <Shield className="w-5 h-5 text-[var(--otjm-red)]" />
                               ) : (
                                 <Users className="w-5 h-5 text-blue-600" />
                               )}
@@ -496,7 +496,7 @@ export default function AdminUserManagement() {
             )}
             
             <div className="flex gap-2 pt-4">
-              <Button type="submit" className="bg-red-600 hover:bg-red-700">
+              <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 {showEditModal ? 'Mettre à jour' : 'Créer'}
               </Button>
               <Button 
@@ -532,7 +532,7 @@ export default function AdminUserManagement() {
             <div className="flex items-center gap-4">
               <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
                 {selectedUser.role === 'admin' ? (
-                  <Shield className="w-8 h-8 text-red-600" />
+                  <Shield className="w-8 h-8 text-[var(--otjm-red)]" />
                 ) : (
                   <Users className="w-8 h-8 text-blue-600" />
                 )}

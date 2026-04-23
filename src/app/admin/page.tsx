@@ -53,17 +53,17 @@ export default function AdminLogin() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 to-red-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <img src="/otjmlogo.jpg" alt="OTJM Logo" className="w-16 h-16 rounded-full" />
-            <h1 className="text-3xl font-bold text-red-600">OTJM</h1>
+            <h1 className="text-3xl font-bold text-[var(--otjm-red)]">OTJM</h1>
           </div>
           <p className="text-gray-600">Panneau d'administration</p>
         </div>
 
-        <Card className="shadow-lg border-red-200">
+        <Card className="shadow-lg border-[var(--otjm-red)]/20">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl text-center">Connexion Admin</CardTitle>
             <CardDescription className="text-center">
@@ -111,7 +111,7 @@ export default function AdminLogin() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={loading}>
+              <Button type="submit" className="w-full bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]" disabled={loading}>
                 {loading ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
@@ -129,7 +129,7 @@ export default function AdminLogin() {
         </Card>
 
         <div className="text-center mt-6">
-          <Button variant="outline" onClick={() => window.location.href = '/'} className="text-red-600 border-red-200 hover:bg-red-50">
+          <Button variant="outline" onClick={() => window.location.href = '/'} className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5">
             Retour au site
           </Button>
         </div>
