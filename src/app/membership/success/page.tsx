@@ -8,7 +8,7 @@ export const metadata = { title: 'Paiement confirmé — OTJM' }
 export default function MembershipSuccessPage() {
   return (
     <div className="min-h-screen font-body" style={{ background: 'var(--otjm-bg)' }}>
-      <SiteHeader isDark onToggleDark={() => {}} />
+      <SiteHeader />
       <main className="container mx-auto px-4 max-w-xl py-24 text-center">
         <div className="w-16 h-16 rounded-full bg-[var(--otjm-red)] mx-auto mb-6 flex items-center justify-center">
           <Check className="w-8 h-8 text-white" />

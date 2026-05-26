@@ -11,12 +11,12 @@ import { useLanguage } from '@/lib/i18n'
 const NAV_HREFS = ['/', '/news', '/archives', '/membership'] as const
 
 interface Props {
-  isDark: boolean
-  onToggleDark: () => void
+  isDark?: boolean
+  onToggleDark?: () => void
   onSignupClick?: () => void
 }
 
-export function SiteHeader({ isDark, onToggleDark, onSignupClick }: Props) {
+export function SiteHeader({ isDark = true, onToggleDark, onSignupClick }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
   const { t, lang, setLang } = useLanguage()
@@ -99,7 +99,7 @@ export function SiteHeader({ isDark, onToggleDark, onSignupClick }: Props) {
                 >
                   {t.header.langToggle}
                 </button>
-                <Button onClick={() => { onToggleDark(); setMenuOpen(false) }} size="sm" variant="outline" className="w-full text-white border-white/20 gap-2">
+                <Button onClick={() => { onToggleDark?.(); setMenuOpen(false) }} size="sm" variant="outline" className="w-full text-white border-white/20 gap-2">
                   {isDark ? <><Sun className="w-4 h-4" /> {t.header.lightMode}</> : <><Moon className="w-4 h-4" /> {t.header.darkMode}</>}
                 </Button>
                 {onSignupClick && (
