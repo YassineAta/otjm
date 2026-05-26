@@ -26,6 +26,7 @@ model Membership {
   status        String    @default("pending")
   paymentMethod String
   paymentStatus String    @default("pending")
+  flouciPaymentId String? @unique
   startDate     DateTime
   endDate       DateTime
   price         Float

@@ -84,15 +84,15 @@ const fr = {
     steps: [
       {
         num: '01',
-        title: 'Pré-adhésion',
-        desc: 'Remplissez le formulaire de pré-adhésion en ligne. Cela prend moins de 3 minutes et vous permet de réserver votre place dans le mouvement.',
-        action: { label: 'Remplir le formulaire', href: 'https://docs.google.com/forms/d/e/1FAIpQLSf1CBjiCEeIpTJgN_1cNVvdHRA46SqJB0lPzP-f6mN_UTIiQw/viewform' },
+        title: 'Inscription et paiement',
+        desc: "Choisissez votre tarif ci-dessous, remplissez le formulaire et payez en ligne via Flouci (carte ou wallet). Moins de 3 minutes.",
+        action: undefined as { label: string; href: string } | undefined,
       },
       {
         num: '02',
-        title: 'Paiement des frais',
-        desc: "Réglez les frais d'adhésion via Cha9a9a.tn selon votre statut (10 DT pour externe, 20 DT pour interne/résident). Paiement sécurisé en ligne.",
-        action: { label: 'Payer en ligne', href: 'https://www.cha9a9a.tn/fund/detail/adhesion-otjm-2025-2026-587977' },
+        title: 'Confirmation',
+        desc: "Dès le paiement confirmé, votre adhésion est activée automatiquement et vous recevez un email de confirmation.",
+        action: undefined as { label: string; href: string } | undefined,
       },
       {
         num: '03',
@@ -148,8 +148,8 @@ const fr = {
   },
   home: {
     eyebrow: 'Organisation Tunisienne des Jeunes Médecins',
-    headlineNormal: 'Au chevet de la ',
-    headlineAccent: 'santé publique',
+    headlineNormal: 'Médecins au service ',
+    headlineAccent: 'du peuple et de la patrie',
     headlineDot: '.',
     heroDesc: "L'OTJM représente et défend les droits des internes, résidents et médecins débutants en Tunisie.",
     latestNews: 'Dernières actualités',
@@ -288,15 +288,15 @@ const ar: typeof fr = {
     steps: [
       {
         num: '01',
-        title: 'الانتساب المسبق',
-        desc: 'أملأ نموذج الانتساب المسبق على الإنترنت. يستغرق أقل من 3 دقائق ويتيح لك حجز مكانك في الحركة.',
-        action: { label: 'أملأ النموذج', href: 'https://docs.google.com/forms/d/e/1FAIpQLSf1CBjiCEeIpTJgN_1cNVvdHRA46SqJB0lPzP-f6mN_UTIiQw/viewform' },
+        title: 'التسجيل والدفع',
+        desc: 'اختر فئتك أدناه، أملأ النموذج وادفع مباشرة عبر Flouci (بطاقة أو محفظة). أقل من 3 دقائق.',
+        action: undefined as { label: string; href: string } | undefined,
       },
       {
         num: '02',
-        title: 'دفع الرسوم',
-        desc: 'ادفع رسوم الانتساب عبر Cha9a9a.tn وفقاً لوضعك (10 دينار للطالب الخارجي، 20 دينار للمقيم الداخلي). دفع آمن عبر الإنترنت.',
-        action: { label: 'ادفع عبر الإنترنت', href: 'https://www.cha9a9a.tn/fund/detail/adhesion-otjm-2025-2026-587977' },
+        title: 'التأكيد',
+        desc: 'بمجرد تأكيد الدفع، يتم تفعيل عضويتك تلقائياً وستتلقى رسالة تأكيد عبر البريد الإلكتروني.',
+        action: undefined as { label: string; href: string } | undefined,
       },
       {
         num: '03',
@@ -352,8 +352,8 @@ const ar: typeof fr = {
   },
   home: {
     eyebrow: 'المنظمة التونسية للأطباء الشبان',
-    headlineNormal: 'في خدمة ',
-    headlineAccent: 'الصحة العمومية',
+    headlineNormal: 'أطباء في خدمة ',
+    headlineAccent: 'الشعب و الوطن',
     headlineDot: '.',
     heroDesc: 'المنظمة التونسية للأطباء الشبان تمثّل وتدافع عن حقوق المقيمين والمتربصين والأطباء الناشئين في تونس.',
     latestNews: 'آخر الأخبار',

@@ -9,7 +9,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { SiteHeader } from '@/components/otjm/SiteHeader'
 import { SiteFooter } from '@/components/otjm/SiteFooter'
+import { MembershipSignupModal, type SignupTier } from '@/components/otjm/MembershipSignupModal'
 import { useLanguage } from '@/lib/i18n'
+
+const TIER_KEYS: SignupTier[] = ['externe', 'interne']
 
 const EASE_OUT = [0.22, 1, 0.36, 1] as [number, number, number, number]
 const fadeUp = {
@@ -26,8 +29,13 @@ export default function MembershipPage() {
   const [isDark, setIsDark] = useState(true)
   const [activeStep, setActiveStep] = useState(0)
   const [openFaq, setOpenFaq] = useState<number | null>(null)
+  const [signupTier, setSignupTier] = useState<SignupTier | null>(null)
   const { t } = useLanguage()
   const m = t.membership
+
+  const openSignup = (idx: number) => setSignupTier(TIER_KEYS[idx] ?? 'externe')
+  const activeTierIdx = signupTier ? TIER_KEYS.indexOf(signupTier) : -1
+  const activeTier = activeTierIdx >= 0 ? m.tiers[activeTierIdx] : null
 
   return (
     <div className={`min-h-screen font-body ${isDark ? '' : 'light-mode'}`} style={{ background: 'var(--otjm-bg)' }}>
@@ -241,14 +249,13 @@ export default function MembershipPage() {
                       ))}
                     </ul>
 
-                    <a
-                      href="https://docs.google.com/forms/d/e/1FAIpQLSf1CBjiCEeIpTJgN_1cNVvdHRA46SqJB0lPzP-f6mN_UTIiQw/viewform"
-                      target="_blank"
-                      rel="noopener noreferrer"
+                    <button
+                      type="button"
+                      onClick={() => openSignup(idx)}
                       className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg text-sm font-bold transition-all duration-200 bg-[var(--otjm-red)] text-white hover:bg-[var(--otjm-red-dk)]"
                     >
                       {m.register} <ArrowRight className="w-4 h-4 rtl-flip" />
-                    </a>
+                    </button>
                   </motion.div>
                 )
               })}
@@ -324,19 +331,26 @@ export default function MembershipPage() {
         <div className="container mx-auto px-4 max-w-6xl text-center">
           <h2 className="font-editorial text-3xl md:text-4xl font-bold mb-3">{m.ctaTitle}</h2>
           <p className="text-white/70 mb-8 max-w-md mx-auto">{m.ctaDesc}</p>
-          <a
-            href="https://docs.google.com/forms/d/e/1FAIpQLSf1CBjiCEeIpTJgN_1cNVvdHRA46SqJB0lPzP-f6mN_UTIiQw/viewform"
-            target="_blank"
-            rel="noopener noreferrer"
+          <button
+            type="button"
+            onClick={() => openSignup(0)}
             className="inline-flex items-center gap-2 bg-white text-[var(--otjm-red)] font-bold px-8 py-3 rounded-lg hover:bg-white/90 transition-colors"
           >
             {m.ctaBtn} <ArrowRight className="w-4 h-4 rtl-flip" />
-          </a>
+          </button>
         </div>
       </section>
 
       </main>
       <SiteFooter />
+
+      <MembershipSignupModal
+        open={signupTier !== null}
+        tier={signupTier}
+        tierLabel={activeTier?.role ?? ''}
+        priceTnd={activeTier ? Number(activeTier.price) : 0}
+        onClose={() => setSignupTier(null)}
+      />
     </div>
   )
 }

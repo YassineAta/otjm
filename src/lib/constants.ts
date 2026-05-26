@@ -19,14 +19,14 @@ export const NAV = [
 // Membership
 export const MEMBERSHIP_STEPS = [
   {
-    num: '01', title: 'Pré-adhésion',
-    desc: 'Remplissez le formulaire de pré-adhésion en ligne. Cela prend moins de 3 minutes.',
-    action: { label: 'Remplir le formulaire', href: 'https://docs.google.com/forms/d/e/1FAIpQLSf1CBjiCEeIpTJgN_1cNVvdHRA46SqJB0lPzP-f6mN_UTIiQw/viewform' },
+    num: '01', title: 'Inscription et paiement',
+    desc: "Choisissez votre tarif, remplissez le formulaire et payez via Flouci. Moins de 3 minutes.",
+    action: undefined,
   },
   {
-    num: '02', title: 'Paiement des frais',
-    desc: "Réglez via Cha9a9a.tn selon votre statut (10 DT externe, 20 DT interne/résident).",
-    action: { label: 'Payer en ligne', href: 'https://www.cha9a9a.tn/fund/detail/adhesion-otjm-2025-2026-587977' },
+    num: '02', title: 'Confirmation',
+    desc: "Adhésion activée automatiquement dès la confirmation du paiement.",
+    action: undefined,
   },
   {
     num: '03', title: 'Retrait de votre carte',
