@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { settlePayment } from '@/lib/payment-state'
+import { deliverMemberCard } from '@/lib/card-delivery'
 
 function siteBase(req: NextRequest) {
   return (process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin).replace(/\/$/, '')
@@ -15,10 +16,13 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${base}/membership/failed?reason=missing_id`, { status: 303 })
   }
 
-  const { outcome, paymentStatus } = await settlePayment(paymentId, 'return')
+  const { outcome, paymentStatus, membershipId } = await settlePayment(paymentId, 'return')
 
   switch (outcome) {
     case 'activated':
+      // Fire-and-forget: the user gets their success page immediately; card
+      // generation+email runs in the background (idempotent, self-logging).
+      if (membershipId) void deliverMemberCard(membershipId, 'return')
       return NextResponse.redirect(`${base}/membership/success`, { status: 303 })
     case 'already_final': {
       // Duplicate callback (e.g. user refreshed). Success only if the row

@@ -20,7 +20,8 @@ import {
   ArrowLeft,
   UserCheck,
   Plus,
-  Upload
+  Upload,
+  Mail
 } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
 
@@ -356,6 +357,27 @@ export default function MemberManagement() {
     }
   }
 
+  const handleSendCard = async (memberId: string) => {
+    try {
+      const response = await fetch(`/api/membership/${memberId}/card`, { method: 'POST' })
+      if (response.ok) {
+        toast({
+          title: 'Succès',
+          description: 'La carte de membre a été envoyée par email.',
+        })
+      } else {
+        const body = await response.json().catch(() => null)
+        throw new Error(body?.error || 'Failed to send card')
+      }
+    } catch (error) {
+      toast({
+        title: 'Erreur',
+        description: error instanceof Error ? error.message : "Impossible d'envoyer la carte.",
+        variant: 'destructive',
+      })
+    }
+  }
+
   const handleDelete = async (memberId: string) => {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce membre?')) {
       return
@@ -555,6 +577,16 @@ export default function MemberManagement() {
                                 className="bg-green-600 hover:bg-green-700"
                               >
                                 <UserCheck className="w-4 h-4" />
+                              </Button>
+                            )}
+                            {member.status === 'active' && member.paymentStatus === 'paid' && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                title="Envoyer la carte de membre par email"
+                                onClick={() => handleSendCard(member.id)}
+                              >
+                                <Mail className="w-4 h-4" />
                               </Button>
                             )}
                             <Button

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { settlePayment } from '@/lib/payment-state'
+import { deliverMemberCard } from '@/lib/card-delivery'
 
 // Flouci POSTs here when a payment changes state. We DON'T trust the body —
 // settlePayment() re-verifies with our secret key before any state change,
@@ -23,7 +24,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, reason: 'missing_payment_id' }, { status: 400 })
   }
 
-  const { outcome } = await settlePayment(paymentId, 'webhook')
+  const { outcome, membershipId } = await settlePayment(paymentId, 'webhook')
+
+  // Server-to-server call — awaiting the card delivery is fine here and
+  // makes the webhook the reliable channel if the user closed their browser.
+  if (outcome === 'activated' && membershipId) {
+    await deliverMemberCard(membershipId, 'webhook')
+  }
 
   switch (outcome) {
     case 'verify_error':

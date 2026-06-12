@@ -7,6 +7,12 @@ const nextConfig: NextConfig = {
   // Pin the tracing root to this project — a stray lockfile in a parent
   // directory otherwise makes Next nest the standalone output wrongly.
   outputFileTracingRoot: __dirname,
+  // Card templates/fonts are read with fs at runtime — make sure the
+  // standalone output bundles them for the routes that generate cards.
+  outputFileTracingIncludes: {
+    '/api/payment/**': ['./src/assets/card/**'],
+    '/api/membership/**': ['./src/assets/card/**'],
+  },
   reactStrictMode: true,
   async headers() {
     return [{

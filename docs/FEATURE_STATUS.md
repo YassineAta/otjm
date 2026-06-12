@@ -11,11 +11,11 @@
 | Newsletter signup (RGPD consent) | ✅ Works (stores to DB) | No send capability exists |
 | Privacy policy page | ✅ Works | |
 | Membership signup form | ✅ Works in dev | |
-| **Flouci payment (create → redirect → verify)** | 🔴 **Broken in production** | Middleware 401s `/api/payment/*` (S1). Logic itself is sound; never end-to-end tested (test keys not yet configured) |
-| Payment webhook | 🔴 Same middleware block | Also lacks rate limit + amount check |
-| Success/failed pages | ⚠️ Misleading copy | Success page promises card delivery by email — not implemented |
-| **Member card generation** | ❌ Not built | Design exists (`cardhonneur.ai`); this audit includes the build plan |
-| **Email delivery (any)** | ❌ Not built | No email library in the project at all |
+| **Flouci payment (create → redirect → verify)** | ✅ Fixed 2026-06-12 | Middleware whitelisted; amount cross-check + PaymentEvent trail added; state machine unit-tested. E2E test-mode run still pending Flouci test keys (see PAYMENTS_RUNBOOK.md) |
+| Payment webhook | ✅ Fixed 2026-06-12 | Rate-limited (30/60s); same hardened state machine |
+| Success/failed pages | ✅ Copy now true | Card email ships on activation once SMTP is configured |
+| **Member card generation** | ✅ Built 2026-06-12 | Two-sided design personalized (number/name/validity); PNG + print PDF; see CARD_GENERATOR.md |
+| **Email delivery (card)** | ⚠️ Built, needs SMTP creds | nodemailer/SMTP; skips + logs until `SMTP_*` env set; admin resend button on members page |
 | Admin login (hidden slug, bcrypt, JWT) | ✅ Works | Role-downgrade bug locks out non-superadmin admins (S7) |
 | Admin dashboard stats | ✅ Works | |
 | Admin members CRUD | ⚠️ Works with bug | Cannot edit tier of publicly-created memberships (D2 tier mismatch) |

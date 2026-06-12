@@ -37,6 +37,9 @@ model Membership {
   cin           String?
   phone         String?
   dateOfBirth   DateTime?
+  // Member card: sequential printed number + delivery bookkeeping.
+  cardNumber    Int?      @unique
+  cardSentAt    DateTime?
 }
 
 model News {

@@ -57,3 +57,25 @@
 - 16 npm audit vulns (mostly xlsx chain) → Phase E.
 
 **Verification:** `npm test` 16/16 green · `npm run build` green (28 routes, standalone copy OK).
+
+---
+
+## 2026-06-12 — Session 3: Phase B — member card generator + email delivery
+
+**Discovery that shaped the feature:** the `.ai` file is **two-sided** — page 2 is a back side the designer already built for personalization: a "CARTE N°" badge with placeholder `0162`, "MEMBRE D'HONNEUR" pill, Arabic title. So instead of inventing a personalization zone on the front, we personalize the designed back: replace the number, add name + validity in the measured whitespace (badge interior `#381f21` at x104/y510 278×118; social divider at y≈573 bounds the text from below).
+
+**Built:**
+- `src/assets/card/` — 300-DPI templates rasterized from the .ai via MiKTeX `pdftoppm`, + Anton/Cinzel fonts (OFL, shipped in repo).
+- `src/lib/card.ts` — sharp + SVG overlay; text rendered as opentype.js vector paths (no system fonts, no browser — ADR-004 executed). Outputs personalized back PNG + 2-page print PDF (pdf-lib, JPEG-embedded).
+- `src/lib/mail.ts` — nodemailer/SMTP, env-driven (ADR-005), bilingual FR/AR card email.
+- `src/lib/card-delivery.ts` — orchestrator: idempotent via `cardSentAt`, sequential `cardNumber` (unique index + retry), every outcome logged as PaymentEvent (`email_sent/email_failed/email_skipped`), never throws into payment callbacks.
+- Wiring: `return` fires-and-forgets delivery (no redirect delay); `webhook` awaits it (reliable channel if browser closed); admin **resend button** (✉) on members page → `POST /api/membership/[id]/card` (force).
+- Schema: `Membership.cardNumber Int? @unique`, `cardSentAt DateTime?` (needs `prisma db push` at deploy).
+- `outputFileTracingIncludes` so standalone deploys bundle templates/fonts.
+- 10 new tests (card render invariants incl. "digits actually land on the badge" pixel check; delivery idempotency/force/failure paths). Visual sample: `scripts/sample-card.ts`.
+
+**Gotchas hit:** opentype.js v2 has no default export/types (`import * as` + `@types/opentype.js`); rtk mangles `npx X` into `npm run X` (call `node_modules\.bin\*` directly); first geometry pass collided with the social-row divider — fixed by measuring, then pinned by the sample script.
+
+**Open:** SMTP credentials (until then delivery logs `email_skipped`); the design is the "Membre d'honneur" variant — per-tier artwork would need designer exports (extension path documented in CARD_GENERATOR.md).
+
+**Verification:** `npm test` 26/26 green · `npm run build` green · sample card visually verified.
