@@ -16,6 +16,35 @@ export const NAV = [
   { label: 'Adhésion',   href: '/membership' },
 ]
 
+// ─── Membership domain model — THE single source of truth ───────────────────
+// tier   = pricing bucket, stored on Membership.tier ('externe' | 'interne')
+// memberStatus = the person's actual status; it determines the tier.
+// Used by: payment create (lib/flouci.ts), admin members page, bulk import,
+// membership PATCH whitelist. Change prices HERE and nowhere else.
+export const TIERS = {
+  externe: { priceTnd: 10, label: 'Externe' },
+  interne: { priceTnd: 20, label: 'Interne / Résident' },
+} as const
+export type TierKey = keyof typeof TIERS
+export const TIER_KEYS = Object.keys(TIERS) as TierKey[]
+
+export const MEMBER_STATUSES = ['Externe', 'Interne', 'Resident', 'En instance de thèse'] as const
+export type MemberStatus = (typeof MEMBER_STATUSES)[number]
+
+export function tierForMemberStatus(memberStatus: string): TierKey {
+  return memberStatus === 'Externe' ? 'externe' : 'interne'
+}
+export function priceForMemberStatus(memberStatus: string): number {
+  return TIERS[tierForMemberStatus(memberStatus)].priceTnd
+}
+// Display label tolerant of legacy DB values ('student'/'young-doctor').
+export function tierLabel(tier: string): string {
+  if (tier in TIERS) return TIERS[tier as TierKey].label
+  if (tier === 'student') return 'Externe (legacy)'
+  if (tier === 'young-doctor') return 'Interne / Résident (legacy)'
+  return tier
+}
+
 // Membership
 export const MEMBERSHIP_STEPS = [
   {

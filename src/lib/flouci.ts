@@ -93,8 +93,6 @@ export async function verifyPayment(paymentId: string): Promise<VerifyPaymentRes
   }
 }
 
-// Single source of truth for what we charge — never trust client-sent prices.
-export const TIER_PRICING: Record<string, { priceTnd: number; label: string }> = {
-  externe: { priceTnd: 10, label: 'Externe' },
-  interne: { priceTnd: 20, label: 'Interne / Résident' },
-}
+// Pricing lives in lib/constants.ts (single source of truth); re-exported
+// here under the historical name for payment-flow callers.
+export { TIERS as TIER_PRICING } from '@/lib/constants'

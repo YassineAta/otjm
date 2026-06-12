@@ -58,8 +58,8 @@ Toutes les variables sont requises en production.
 | `NEXTAUTH_SECRET` | Clé secrète NextAuth. Générer : `openssl rand -base64 32` |
 | `NEXTAUTH_URL` | URL de base de l'application. Ex : `https://otjm.tn` |
 | `ADMIN_SLUG` | Segment d'URL secret pour accéder au panel admin. Ex : `a3f9b2`. Générer : `node -e "console.log(require('crypto').randomBytes(6).toString('hex'))"` |
-| `ADMIN_EMAIL` | Email du premier compte administrateur (utilisé par `createAdmin.js`) |
-| `ADMIN_PASSWORD` | Mot de passe du premier compte administrateur (minimum 12 caractères) |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `MAIL_FROM` | Coordonnées SMTP pour l'envoi de la carte de membre par email (voir `docs/CARD_GENERATOR.md`) |
+| `DEV_AUTH_BYPASS` | Dev uniquement : `1` pour désactiver l'auth admin en local (ignoré hors `NODE_ENV=development`) |
 
 ---
 
@@ -83,11 +83,7 @@ Le script `build` copie également `public/` et `.next/static/` dans `.next/stan
 
 ## Créer le premier compte admin
 
-```bash
-ADMIN_EMAIL=admin@otjm.tn ADMIN_PASSWORD=monmotdepasse node createAdmin.js
-```
-
-Le script lit `ADMIN_EMAIL`, `ADMIN_PASSWORD` (min 12 chars) et `ADMIN_NAME` (optionnel, défaut "Admin"). Il hashe le mot de passe (bcrypt, 12 rounds) puis fait un upsert dans la collection `Admin`. Peut être relancé pour mettre à jour un compte existant.
+Ouvrir `/setup` dans le navigateur (formulaire de création du premier compte). L'endpoint `POST /api/setup` se verrouille automatiquement dès qu'un admin existe et est rate-limité. L'ancien script `createAdmin.js` a été supprimé (mécanisme en double).
 
 ---
 
@@ -132,7 +128,6 @@ otjm/
 ├── types/
 │   └── next-auth.d.ts        # Augmentation des types de session NextAuth
 ├── .env.example              # Template des variables d'environnement
-├── createAdmin.js            # Script de création/mise à jour du compte admin
 ├── next.config.ts            # Config Next.js (standalone, headers de sécurité, CSP)
 ├── tailwind.config.ts        # Configuration Tailwind
 ├── components.json           # Configuration shadcn/ui

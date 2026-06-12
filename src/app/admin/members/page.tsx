@@ -24,6 +24,7 @@ import {
   Mail
 } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
+import { MEMBER_STATUSES, tierForMemberStatus, priceForMemberStatus, tierLabel } from '@/lib/constants'
 
 interface Member {
   id: string
@@ -46,15 +47,7 @@ interface Member {
   memberStatus?: string
 }
 
-const ALL_MEMBER_STATUSES = ['Externe', 'Interne', 'Resident', 'En instance de thèse'];
-
-const PRICE_MAP: {[key: string]: number} = {
-    'Externe': 10,
-    'Interne': 20,
-    'Resident': 20,
-    'En instance de thèse': 20,
-    'default': 10
-};
+const ALL_MEMBER_STATUSES = [...MEMBER_STATUSES];
 
 const getStatusColor = (status: string) => {
     switch (status) {
@@ -74,14 +67,7 @@ const getStatusText = (status: string) => {
     }
 }
 
-const getTierText = (tier: string) => {
-    switch (tier) {
-      case 'student': return 'Étudiant'
-      case 'young-doctor': return 'Jeune Médecin'
-      case 'confirmed-doctor': return 'Médecin Confirmé'
-      default: return tier
-    }
-}
+const getTierText = tierLabel
 
 const initialAddFormData = {
     fullName: '',
@@ -91,9 +77,9 @@ const initialAddFormData = {
     phone: '',
     faculty: 'FMT',
     memberStatus: 'Externe',
-    tier: 'student',
+    tier: tierForMemberStatus('Externe'),
     paymentStatus: 'pending',
-    price: PRICE_MAP['Externe'],
+    price: priceForMemberStatus('Externe'),
 };
 
 export default function MemberManagement() {
@@ -119,20 +105,11 @@ export default function MemberManagement() {
   const router = useRouter()
 
   const handleMemberStatusChange = (newStatus: string, updateState: React.Dispatch<React.SetStateAction<any>> = setAddFormData) => {
-    const newPrice = PRICE_MAP[newStatus] || PRICE_MAP['default'];
-
-    let newTier = 'student';
-    if (newStatus === 'Resident' || newStatus === 'Interne' || newStatus === 'En instance de thèse') {
-        newTier = 'young-doctor';
-    } else {
-        newTier = 'student';
-    }
-
     updateState((prev: typeof initialAddFormData) => ({
         ...prev,
         memberStatus: newStatus,
-        price: newPrice,
-        tier: newTier,
+        price: priceForMemberStatus(newStatus),
+        tier: tierForMemberStatus(newStatus),
     }));
   };
 
@@ -319,8 +296,8 @@ export default function MemberManagement() {
 
     if (!selectedMember) return
 
-    const updatedTier = editFormData.memberStatus ? (editFormData.memberStatus === 'Resident' || editFormData.memberStatus === 'Interne' || editFormData.memberStatus === 'En instance de thèse' ? 'young-doctor' : 'student') : editFormData.tier;
-    const updatedPrice = editFormData.memberStatus ? (PRICE_MAP[editFormData.memberStatus] || PRICE_MAP['default']) : selectedMember.price;
+    const updatedTier = editFormData.memberStatus ? tierForMemberStatus(editFormData.memberStatus) : editFormData.tier;
+    const updatedPrice = editFormData.memberStatus ? priceForMemberStatus(editFormData.memberStatus) : selectedMember.price;
 
     const dataToSend = {
       ...editFormData,
@@ -486,9 +463,11 @@ export default function MemberManagement() {
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Tous les types</option>
-                  <option value="student">Étudiant</option>
-                  <option value="young-doctor">Jeune Médecin</option>
-                  <option value="confirmed-doctor">Médecin Confirmé</option>
+                  <option value="externe">Externe</option>
+                  <option value="interne">Interne / Résident</option>
+                  {/* legacy values still present in old DB rows */}
+                  <option value="student">Étudiant (legacy)</option>
+                  <option value="young-doctor">Jeune Médecin (legacy)</option>
                 </select>
               </div>
             </div>
@@ -697,7 +676,7 @@ export default function MemberManagement() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {ALL_MEMBER_STATUSES.map(status => (
-                    <SelectItem key={status} value={status}>{status} ({PRICE_MAP[status] || 10} DT)</SelectItem>
+                    <SelectItem key={status} value={status}>{status} ({priceForMemberStatus(status)} DT)</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -860,7 +839,7 @@ export default function MemberManagement() {
                 {['Externe', 'Interne', 'Resident', 'En instance de thèse'].map(status => (
                     <div key={status} className="flex items-center space-x-2">
                         <RadioGroupItem value={status} id={status} />
-                        <Label htmlFor={status}>{status} (<span className='font-semibold text-[var(--otjm-red)]'>{(PRICE_MAP[status] || 20)} DT</span>)</Label>
+                        <Label htmlFor={status}>{status} (<span className='font-semibold text-[var(--otjm-red)]'>{priceForMemberStatus(status)} DT</span>)</Label>
                     </div>
                 ))}
               </RadioGroup>

@@ -5,16 +5,7 @@ import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { Readable } from 'stream';
 
-// Utility functions (from MemberManagement.tsx)
-const PRICE_MAP: {[key: string]: number} = {
-    'Externe': 10, 'Interne': 20, 'Resident': 20, 'En instance de thèse': 20, 'default': 10
-};
-const determineTier = (memberStatus: string): string => {
-    // Ajout de 'En instance de thèse' pour le tier young-doctor, si pertinent
-    if (memberStatus === 'Resident' || memberStatus === 'Interne' || memberStatus === 'En instance de thèse') return 'young-doctor';
-    return 'student';
-};
-// generatePlaceholderPassword n'est plus nécessaire
+import { tierForMemberStatus, priceForMemberStatus } from '@/lib/constants';
 
 export async function POST(request: NextRequest) {
     const auth = await requireAdmin()
@@ -63,8 +54,8 @@ export async function POST(request: NextRequest) {
             const memberStatus = row.memberStatus;
             const paymentStatus = row.paymentStatus || 'pending';
 
-            const price = PRICE_MAP[memberStatus] || PRICE_MAP['default'];
-            const tier = determineTier(memberStatus);
+            const price = priceForMemberStatus(memberStatus);
+            const tier = tierForMemberStatus(memberStatus);
 
             membersToCreate.push({
                 // CORRECTION 2: Tous les champs d'identité sont maintenant des champs de Membership
@@ -93,15 +84,9 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: 'No valid records found for insertion or all records already exist.', count: 0 }, { status: 200 });
         }
 
-        // --- PRISMA BATCH INSERTION (Membership ONLY) ---
-        // CORRECTION 3: Exécution d'un seul bloc de création de Membership
-        const creationPromises = membersToCreate.map(memberData =>
-            db.membership.create({
-                data: memberData, // Insère toutes les données directement
-            })
-        );
-
-        await Promise.all(creationPromises);
+        // One batched insert instead of N parallel creates — one DB roundtrip,
+        // no partial-failure interleaving with other writers.
+        await db.membership.createMany({ data: membersToCreate });
 
         return NextResponse.json({
             message: 'Bulk import successful.',

@@ -3,7 +3,6 @@ import { Geist, Geist_Mono, Playfair_Display, Inter, Amiri, Noto_Sans_Arabic } f
 import './globals.css'
 import { Toaster } from '@/components/ui/toaster'
 import { LanguageProvider } from '@/lib/i18n'
-import { LangSync } from '@/components/otjm/LangSync'
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
@@ -28,8 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${inter.variable} ${amiri.variable} ${notoArabic.variable} antialiased bg-background text-foreground`}>
-        <LanguageProvider>
-          <LangSync />
+        <LanguageProvider>{/* lang/dir on <html> is synced by LanguageProvider itself */}
           <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[9999] focus:bg-[var(--otjm-red)] focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:text-sm focus:font-semibold">
             Aller au contenu principal
           </a>
