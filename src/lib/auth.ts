@@ -10,7 +10,10 @@ const MAX_EMAIL = 254
 const MAX_TEXT = 5000
 
 export async function requireAdmin(): Promise<AuthOk | AuthErr> {
-  if (process.env.NODE_ENV === 'development') {
+  // Same double condition as middleware.ts: dev mode alone is not enough —
+  // the bypass must be explicitly opted into via DEV_AUTH_BYPASS=1, so a
+  // wrong NODE_ENV in production can never disable auth by itself.
+  if (process.env.NODE_ENV === 'development' && process.env.DEV_AUTH_BYPASS === '1') {
     return { session: { user: { id: 'dev', role: 'superadmin', email: 'dev@localhost' } } }
   }
 

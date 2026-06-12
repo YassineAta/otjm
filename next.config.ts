@@ -4,6 +4,9 @@ const isDev = process.env.NODE_ENV === 'development'
 
 const nextConfig: NextConfig = {
   output: 'standalone',
+  // Pin the tracing root to this project — a stray lockfile in a parent
+  // directory otherwise makes Next nest the standalone output wrongly.
+  outputFileTracingRoot: __dirname,
   reactStrictMode: true,
   async headers() {
     return [{
@@ -23,7 +26,7 @@ const nextConfig: NextConfig = {
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
             "img-src 'self' blob: data: https:",
             "font-src 'self' https://fonts.gstatic.com",
-            "frame-src 'self' https://www.cha9a9a.tn",
+            "frame-src 'self'",
             "connect-src 'self'",
             "frame-ancestors 'none'",
           ].join('; '),

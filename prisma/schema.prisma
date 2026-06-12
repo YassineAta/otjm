@@ -92,6 +92,24 @@ model Newsletter {
   updatedAt      DateTime  @updatedAt
 }
 
+// Append-only trail of payment lifecycle events (created, verified, state
+// transitions, amount mismatches). Written by src/lib/payment-state.ts.
+model PaymentEvent {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  membershipId    String   @db.ObjectId
+  flouciPaymentId String?
+  type            String   // created | verified_success | verified_failure | amount_mismatch | already_final | email_sent | email_failed
+  fromStatus      String?
+  toStatus        String?
+  amountMillimes  Int?
+  detail          String?
+  source          String   // create | return | webhook | admin
+  createdAt       DateTime @default(now())
+
+  @@index([membershipId])
+  @@index([flouciPaymentId])
+}
+
 model Admin {
   id               String   @id @default(auto()) @map("_id") @db.ObjectId
   email            String   @unique

@@ -3,12 +3,18 @@ import { getToken } from 'next-auth/jwt'
 
 const SLUG = process.env.ADMIN_SLUG || 'admin'
 const ADMIN_ROLES = ['admin', 'superadmin']
-const PUBLIC_API = ['/api/auth', '/api/contact', '/api/newsletter', '/api/news', '/api/archives', '/api/setup']
+// NOTE: prefixes only. Deliberately does NOT include '/api/membership' — that
+// surface is admin-only; its payment-facing sibling lives under '/api/payment'.
+const PUBLIC_API = ['/api/auth', '/api/contact', '/api/newsletter', '/api/news', '/api/archives', '/api/setup', '/api/payment']
 
 interface Token { role?: string; id?: string; email?: string }
 
 export async function middleware(req: NextRequest) {
-  if (process.env.NODE_ENV === 'development') return NextResponse.next()
+  // Auth bypass needs BOTH dev mode and an explicit opt-in flag, so a
+  // misconfigured NODE_ENV alone can never ship an open admin panel.
+  if (process.env.NODE_ENV === 'development' && process.env.DEV_AUTH_BYPASS === '1') {
+    return NextResponse.next()
+  }
 
   const path = req.nextUrl.pathname
 

@@ -43,7 +43,11 @@ export const authOptions: NextAuthOptions = {
             id: linkedUser.id,           // CRITICAL: We pass the linked user ID for foreign-keys (authorId)
             name: linkedUser.name || "Administrator",
             email: linkedUser.email,
-            role: linkedUser.role        // Returns derived safe role
+            // The JWT must carry the REAL Admin-collection role. The linked
+            // User row's role is content-authorship plumbing only — using it
+            // here downgraded non-superadmin admins to 'member' and locked
+            // them out at the middleware (SECURITY_REVIEW.md S7).
+            role: admin.role
           };
         }
 

@@ -1,84 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { checkRateLimit } from '@/lib/rate-limit';
+import { adminMembershipCreateSchema, firstZodError } from '@/lib/schemas';
 
-const parseDate = (dateString: any, isRequired: boolean = true) => {
-    if (!dateString) {
-        if (isRequired) throw new Error('Date field is required.');
-        return null;
-    }
-    const date = new Date(dateString);
-    if (isNaN(date.getTime())) {
-        throw new Error(`Invalid date format for: ${dateString}`);
-    }
-    return date;
-};
-
+// Admin-only manual member entry (e.g. cash payments at a stand).
+// The middleware also blocks this route for non-admins in production, but the
+// route enforces auth itself — defense in depth, and safe under any future
+// middleware allowlist change (docs/SECURITY_REVIEW.md S2).
 export async function POST(request: NextRequest) {
-    const limited = checkRateLimit(request, { limit: 5, windowSeconds: 60 })
-    if (limited) return limited
-    let data;
+    const auth = await requireAdmin()
+    if (auth.error) return auth.error
+
+    let raw;
     try {
-        data = await request.json();
-    } catch (e) {
-        return NextResponse.json({ message: "Invalid JSON body." }, { status: 400 });
+        raw = await request.json();
+    } catch {
+        return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
     }
 
-    const {
-        fullName, cin, dateOfBirth, email, phone, faculty,
-        memberStatus, price, paymentStatus, startDate, endDate, paymentMethod, tier
-    } = data;
-
-    if (!fullName || !email || !memberStatus || price === undefined || !startDate || !endDate) {
-        return NextResponse.json({
-            message: "Champs essentiels manquants pour la création.",
-        }, { status: 400 });
+    const parsed = adminMembershipCreateSchema.safeParse(raw)
+    if (!parsed.success) {
+        return NextResponse.json({ error: firstZodError(parsed.error) }, { status: 400 });
     }
+    const data = parsed.data
 
-    // Checking for existing member by unique email in Membership table
     const existingMembership = await db.membership.findUnique({
-        where: { email },
+        where: { email: data.email },
         select: { id: true }
     });
 
     if (existingMembership) {
         return NextResponse.json({
-            message: "Un membre avec cet email existe déjà.",
-            email: email
+            error: "Un membre avec cet email existe déjà.",
+            email: data.email
         }, { status: 409 });
     }
 
     try {
         const newMembership = await db.membership.create({
             data: {
-                // Identity fields stored directly in Membership
-                email: email,
-                name: fullName,
-
-                tier: tier,
-                status: paymentStatus === 'paid' ? 'active' : 'pending',
-                paymentStatus: paymentStatus,
-                paymentMethod: paymentMethod,
-                price: price,
-
-                startDate: parseDate(startDate)!,
-                endDate: parseDate(endDate)!,
-
-                memberStatus: memberStatus,
-                faculty: faculty,
-                cin: cin,
-                phone: phone,
-                dateOfBirth: parseDate(dateOfBirth, false),
+                email: data.email,
+                name: data.fullName,
+                tier: data.tier,
+                status: data.paymentStatus === 'paid' ? 'active' : 'pending',
+                paymentStatus: data.paymentStatus,
+                paymentMethod: data.paymentMethod,
+                price: data.price,
+                startDate: data.startDate,
+                endDate: data.endDate,
+                memberStatus: data.memberStatus,
+                faculty: data.faculty ?? null,
+                cin: data.cin ?? null,
+                phone: data.phone ?? null,
+                dateOfBirth: data.dateOfBirth ?? null,
             }
         });
 
         return NextResponse.json({
-            message: "Membre créé avec succès (Membership only).",
+            message: "Membre créé avec succès.",
             memberId: newMembership.id
         }, { status: 201 });
 
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             { error: "Échec de l'opération de base de données lors de la création du membre." },
             { status: 500 }
@@ -93,12 +76,11 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const email = searchParams.get('email')
 
-    let where: any = {}
+    const where: { email?: string } = {}
     if (email) {
       where.email = email
     }
 
-    // FIX: Removed the inclusion of the 'user' relationship which no longer exists.
     const memberships = await db.membership.findMany({
       where,
       orderBy: {
@@ -107,7 +89,7 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json(memberships)
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: 'Failed to fetch memberships' },
       { status: 500 }

@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
-import { verifyPayment } from '@/lib/flouci'
+import { settlePayment } from '@/lib/payment-state'
 
 function siteBase(req: NextRequest) {
   return (process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin).replace(/\/$/, '')
 }
 
+// The user lands here when Flouci redirects them back after paying (or
+// abandoning). State logic lives in settlePayment(); this route only maps
+// outcomes to the right landing page.
 export async function GET(req: NextRequest) {
   const paymentId = req.nextUrl.searchParams.get('payment_id')
   const base = siteBase(req)
@@ -13,34 +15,26 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${base}/membership/failed?reason=missing_id`, { status: 303 })
   }
 
-  let v
-  try {
-    v = await verifyPayment(paymentId)
-  } catch {
-    return NextResponse.redirect(`${base}/membership/failed?reason=verify_error`, { status: 303 })
-  }
+  const { outcome, paymentStatus } = await settlePayment(paymentId, 'return')
 
-  const membership = await db.membership.findUnique({ where: { flouciPaymentId: paymentId } })
-  if (!membership) {
-    return NextResponse.redirect(`${base}/membership/failed?reason=unknown_payment`, { status: 303 })
-  }
-
-  // Only transition from pending — never demote a paid row.
-  if (membership.paymentStatus === 'pending') {
-    if (v.success && v.status === 'SUCCESS') {
-      await db.membership.update({
-        where: { id: membership.id },
-        data: { paymentStatus: 'paid', status: 'active' },
-      })
-    } else if (v.status === 'FAILURE' || v.status === 'EXPIRED') {
-      await db.membership.update({
-        where: { id: membership.id },
-        data: { paymentStatus: 'failed' },
-      })
+  switch (outcome) {
+    case 'activated':
+      return NextResponse.redirect(`${base}/membership/success`, { status: 303 })
+    case 'already_final': {
+      // Duplicate callback (e.g. user refreshed). Success only if the row
+      // really settled as paid — it may equally have settled as failed.
+      const dest = paymentStatus === 'paid' ? 'success' : 'failed?reason=already_settled'
+      return NextResponse.redirect(`${base}/membership/${dest}`, { status: 303 })
     }
-    // PENDING: leave as-is; webhook or retry will resolve it.
+    case 'still_pending':
+      return NextResponse.redirect(`${base}/membership/failed?reason=pending`, { status: 303 })
+    case 'amount_mismatch':
+      return NextResponse.redirect(`${base}/membership/failed?reason=verification`, { status: 303 })
+    case 'verify_error':
+      return NextResponse.redirect(`${base}/membership/failed?reason=verify_error`, { status: 303 })
+    case 'unknown_payment':
+      return NextResponse.redirect(`${base}/membership/failed?reason=unknown_payment`, { status: 303 })
+    default:
+      return NextResponse.redirect(`${base}/membership/failed`, { status: 303 })
   }
-
-  const ok = v.success && v.status === 'SUCCESS'
-  return NextResponse.redirect(`${base}/membership/${ok ? 'success' : 'failed'}`, { status: 303 })
 }
