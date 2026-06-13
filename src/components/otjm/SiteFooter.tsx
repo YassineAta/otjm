@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Facebook, Instagram, MapPin, Phone, Mail, FileText } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n'
 
@@ -19,7 +20,7 @@ export function SiteFooter() {
           <div>
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[var(--otjm-red)]">
-                <img src="/otjmlogo.jpg" alt="OTJM" className="w-full h-full object-cover" />
+                <Image src="/otjmlogo.jpg" alt="OTJM" width={80} height={80} className="w-full h-full object-cover" />
               </div>
               <div>
                 <div className="font-black text-lg">OTJM</div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -505,7 +506,7 @@ export default function OTJMHome() {
           <div className="flex items-center justify-between h-16">
             <button onClick={() => handleNavClick('accueil')} className="flex items-center gap-3 group">
               <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[var(--otjm-red)] ring-offset-2 ring-offset-[var(--otjm-dark)]">
-                <img src="/otjmlogo.jpg" alt="OTJM" className="w-full h-full object-cover" />
+                <Image src="/otjmlogo.jpg" alt="OTJM" width={72} height={72} className="w-full h-full object-cover" />
               </div>
               <div className="leading-none">
                 <span className="text-white font-black text-lg tracking-tight block">OTJM</span>
@@ -777,7 +778,7 @@ export default function OTJMHome() {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-[var(--otjm-red)]">
-                  <img src="/otjmlogo.jpg" alt="OTJM" loading="lazy" className="w-full h-full object-cover" />
+                  <Image src="/otjmlogo.jpg" alt="OTJM" width={80} height={80} className="w-full h-full object-cover" />
                 </div>
                 <div>
                   <div className="font-black text-lg">OTJM</div>

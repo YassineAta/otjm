@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Sun, Moon, Menu, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -31,7 +32,7 @@ export function SiteHeader({ isDark = true, onToggleDark, onSignupClick }: Props
       <div className="container mx-auto px-4 max-w-6xl flex items-center justify-between h-16">
         <Link href="/" className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full overflow-hidden ring-2 ring-[var(--otjm-red)] ring-offset-2 ring-offset-[var(--otjm-dark)]">
-            <img src="/otjmlogo.jpg" alt="OTJM" className="w-full h-full object-cover" />
+            <Image src="/otjmlogo.jpg" alt="OTJM" width={72} height={72} className="w-full h-full object-cover" />
           </div>
           <div className="leading-none">
             <span className="text-white font-black text-lg tracking-tight block">OTJM</span>

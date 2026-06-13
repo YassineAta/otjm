@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -81,7 +82,7 @@ export default function SetupPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <img src="/otjmlogo.jpg" alt="OTJM Logo" className="w-16 h-16 rounded-full" />
+            <Image src="/otjmlogo.jpg" alt="OTJM Logo" width={128} height={128} className="w-16 h-16 rounded-full" />
             <h1 className="text-3xl font-bold text-red-600">OTJM</h1>
           </div>
           <p className="text-gray-600">Installation initiale</p>

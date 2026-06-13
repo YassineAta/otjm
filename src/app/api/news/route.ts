@@ -6,18 +6,18 @@ export const dynamic = 'force-dynamic'
 
 /**
  * GET /api/news
- * Optional query: ?published=true
+ * Optional query: ?published=true|false (admin only — public callers always
+ * get published articles only, so drafts never leak).
  */
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const publishedParam = searchParams.get('published')
+    const isAdmin = !(await requireAdmin()).error
 
-    const where: Record<string, unknown> = {}
-
-    if (publishedParam !== null) {
-      where.published = publishedParam === 'true'
-    }
+    const where: Record<string, unknown> = isAdmin
+      ? (publishedParam !== null ? { published: publishedParam === 'true' } : {})
+      : { published: true }
 
     const news = await db.news.findMany({
       where,
@@ -31,7 +31,12 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(news, { status: 200 })
+    return NextResponse.json(news, {
+      status: 200,
+      // Public content changes a few times a week — let browsers reuse it
+      // briefly instead of hitting MongoDB on every navigation.
+      headers: isAdmin ? {} : { 'Cache-Control': 'public, max-age=300, stale-while-revalidate=900' },
+    })
   } catch (error) {
     return NextResponse.json(
       { error: 'Failed to retrieve news.' },

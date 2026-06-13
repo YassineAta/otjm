@@ -62,8 +62,11 @@ export async function GET(request: NextRequest) {
             }
         });
 
-        // Return a successful response with the data
-        return NextResponse.json(archives, { status: 200 });
+        return NextResponse.json(archives, {
+            status: 200,
+            // Historical documents rarely change — cache generously client-side.
+            headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400' },
+        });
 
     } catch (error) {
         return NextResponse.json(
