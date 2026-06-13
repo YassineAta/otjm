@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,7 +22,10 @@ import {
   User,
   Link, // Added for linkUrl
 } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
+import { useAdminList } from '@/hooks/use-admin-list'
+import { useModalForm } from '@/hooks/use-modal-form'
+import { useTableFilter } from '@/hooks/use-table-filter'
+import { adminFetch, toastSuccess, toastError } from '@/lib/admin-api'
 
 // --- INTERFACE ---
 interface ArchiveItem {
@@ -63,16 +65,21 @@ const DEFAULT_IMAGE_URL = 'otjmlogo.jpg';
 
 
 export default function ArchiveManagement() {
-  const [archives, setArchives] = useState<ArchiveItem[]>([])
-  const [filteredArchives, setFilteredArchives] = useState<ArchiveItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('all')
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
-  const [selectedArchive, setSelectedArchive] = useState<ArchiveItem | null>(null)
+  const { items: archives, loading, refetch: fetchArchives } = useAdminList<ArchiveItem>('/api/archives', {
+    errorMessage: 'Impossible de charger les archives.',
+  })
 
+  const {
+    search: searchTerm,
+    setSearch: setSearchTerm,
+    filters,
+    setFilter,
+    filtered: filteredArchives,
+  } = useTableFilter(archives, ['title', 'excerpt'], {
+    category: (item, value) => item.category === value,
+  })
+
+  // Kept inside the component so reset restores today's date, not module-load date.
   const initialFormData = {
     title: '',
     excerpt: '',
@@ -83,7 +90,21 @@ export default function ArchiveManagement() {
     linkUrl: '',
     date: new Date().toISOString().split('T')[0]
   }
-  const [formData, setFormData] = useState(initialFormData)
+
+  const {
+    showAdd: showAddModal,
+    setShowAdd: setShowAddModal,
+    showEdit: showEditModal,
+    setShowEdit: setShowEditModal,
+    showView: showViewModal,
+    setShowView: setShowViewModal,
+    selected: selectedArchive,
+    setSelected: setSelectedArchive,
+    formData,
+    setFormData,
+    reset: resetModalsAndForm,
+  } = useModalForm<ArchiveItem, typeof initialFormData>(initialFormData)
+
   const router = useRouter()
 
   const formatDate = (dateString: string) => {
@@ -98,57 +119,6 @@ export default function ArchiveManagement() {
     }
   }
 
-  const resetModalsAndForm = () => {
-    setShowAddModal(false)
-    setShowEditModal(false)
-    setShowViewModal(false)
-    setSelectedArchive(null)
-    setFormData(initialFormData)
-  }
-
-  useEffect(() => {
-    fetchArchives()
-  }, [])
-
-  useEffect(() => {
-    filterArchives()
-  }, [archives, searchTerm, categoryFilter])
-
-  const fetchArchives = async () => {
-    try {
-      const response = await fetch('/api/archives')
-      if (response.ok) {
-        const data = await response.json()
-        setArchives(data)
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les archives.',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const filterArchives = () => {
-    let filtered = archives
-
-    if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    if (categoryFilter !== 'all') {
-      filtered = filtered.filter(item => item.category === categoryFilter)
-    }
-
-    setFilteredArchives(filtered)
-  }
-
   // --- SUBMIT (CREATE) FUNCTION ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -157,32 +127,19 @@ export default function ArchiveManagement() {
     const finalImageUrl = formData.imageUrl.trim() || DEFAULT_IMAGE_URL;
 
     try {
-      const response = await fetch('/api/archives', {
+      await adminFetch('/api/archives', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        body: {
           ...formData,
           imageUrl: finalImageUrl,
           authorId: 'admin',
-        })
+        },
       })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'archive a été créée.',
-        })
-        resetModalsAndForm()
-        fetchArchives()
-      } else {
-        throw new Error('Failed to create archive')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de créer l\'archive.',
-        variant: 'destructive',
-      })
+      toastSuccess('L\'archive a été créée.')
+      resetModalsAndForm()
+      fetchArchives()
+    } catch {
+      toastError('Impossible de créer l\'archive.')
     }
   }
 
@@ -214,30 +171,15 @@ export default function ArchiveManagement() {
     if (!selectedArchive) return
 
     try {
-      const response = await fetch(`/api/archives/${selectedArchive.id}`, {
+      await adminFetch(`/api/archives/${selectedArchive.id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
+        body: formData,
       })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'archive a été mise à jour.',
-        })
-        resetModalsAndForm()
-        fetchArchives()
-      } else {
-        throw new Error('Failed to update archive')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de mettre à jour l\'archive.',
-        variant: 'destructive',
-      })
+      toastSuccess('L\'archive a été mise à jour.')
+      resetModalsAndForm()
+      fetchArchives()
+    } catch {
+      toastError('Impossible de mettre à jour l\'archive.')
     }
   }
 
@@ -248,25 +190,11 @@ export default function ArchiveManagement() {
     }
 
     try {
-      const response = await fetch(`/api/archives/${id}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'archive a été supprimée.',
-        })
-        fetchArchives()
-      } else {
-        throw new Error('Failed to delete archive')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de supprimer l\'archive.',
-        variant: 'destructive',
-      })
+      await adminFetch(`/api/archives/${id}`, { method: 'DELETE' })
+      toastSuccess('L\'archive a été supprimée.')
+      fetchArchives()
+    } catch {
+      toastError('Impossible de supprimer l\'archive.')
     }
   }
 
@@ -327,8 +255,8 @@ export default function ArchiveManagement() {
               </div>
               <div className="flex gap-2">
                 <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  value={filters.category}
+                  onChange={(e) => setFilter('category', e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Toutes les catégories</option>

@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -24,7 +23,10 @@ import {
   Lock,
   Unlock
 } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
+import { useAdminList } from '@/hooks/use-admin-list'
+import { useModalForm } from '@/hooks/use-modal-form'
+import { useTableFilter } from '@/hooks/use-table-filter'
+import { adminFetch, toastSuccess, toastError } from '@/lib/admin-api'
 
 interface AdminUser {
   id: string
@@ -35,103 +37,57 @@ interface AdminUser {
   updatedAt: string
 }
 
+const initialFormData = {
+  email: '',
+  name: '',
+  role: 'member',
+  password: ''
+}
+
 export default function AdminUserManagement() {
-  const [users, setUsers] = useState<AdminUser[]>([])
-  const [filteredUsers, setFilteredUsers] = useState<AdminUser[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [roleFilter, setRoleFilter] = useState('all')
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null)
-  const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    role: 'member',
-    password: ''
+  const { items: users, loading, refetch: fetchUsers } = useAdminList<AdminUser>('/api/admin/users', {
+    errorMessage: 'Impossible de charger les utilisateurs.',
   })
+
+  const {
+    search: searchTerm,
+    setSearch: setSearchTerm,
+    filters,
+    setFilter,
+    filtered: filteredUsers,
+  } = useTableFilter(users, ['name', 'email'], {
+    role: (user, value) => user.role === value,
+  })
+
+  const {
+    showAdd: showAddModal,
+    setShowAdd: setShowAddModal,
+    showEdit: showEditModal,
+    setShowEdit: setShowEditModal,
+    showView: showViewModal,
+    setShowView: setShowViewModal,
+    selected: selectedUser,
+    setSelected: setSelectedUser,
+    formData,
+    setFormData,
+    reset: resetModalsAndForm,
+  } = useModalForm<AdminUser, typeof initialFormData>(initialFormData)
+
   const router = useRouter()
-
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  useEffect(() => {
-    filterUsers()
-  }, [users, searchTerm, roleFilter])
-
-  const fetchUsers = async () => {
-    try {
-      const response = await fetch('/api/admin/users')
-      if (response.ok) {
-        const data = await response.json()
-        setUsers(data)
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les utilisateurs.',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const filterUsers = () => {
-    let filtered = users
-
-    // Filter by search term
-    if (searchTerm) {
-      filtered = filtered.filter(user => 
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    // Filter by role
-    if (roleFilter !== 'all') {
-      filtered = filtered.filter(user => user.role === roleFilter)
-    }
-
-    setFilteredUsers(filtered)
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    try {
-      const response = await fetch('/api/admin/users', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData)
-      })
 
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'utilisateur a été créé.',
-        })
-        setShowAddModal(false)
-        setFormData({
-          email: '',
-          name: '',
-          role: 'member',
-          password: ''
-        })
-        fetchUsers()
-      } else {
-        throw new Error('Failed to create user')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de créer l\'utilisateur.',
-        variant: 'destructive',
+    try {
+      await adminFetch('/api/admin/users', {
+        method: 'POST',
+        body: formData,
       })
+      toastSuccess('L\'utilisateur a été créé.')
+      resetModalsAndForm()
+      fetchUsers()
+    } catch {
+      toastError('Impossible de créer l\'utilisateur.')
     }
   }
 
@@ -153,46 +109,19 @@ export default function AdminUserManagement() {
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!selectedUser) return
-    
+
     try {
-      const updateData = {
-        name: formData.name,
-        role: formData.role
-      }
-
-      const response = await fetch(`/api/admin/users/${selectedUser.id}`, {
+      await adminFetch(`/api/admin/users/${selectedUser.id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updateData)
+        body: { name: formData.name, role: formData.role },
       })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'utilisateur a été mis à jour.',
-        })
-        setShowEditModal(false)
-        setSelectedUser(null)
-        setFormData({
-          email: '',
-          name: '',
-          role: 'member',
-          password: ''
-        })
-        fetchUsers()
-      } else {
-        throw new Error('Failed to update user')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de mettre à jour l\'utilisateur.',
-        variant: 'destructive',
-      })
+      toastSuccess('L\'utilisateur a été mis à jour.')
+      resetModalsAndForm()
+      fetchUsers()
+    } catch {
+      toastError('Impossible de mettre à jour l\'utilisateur.')
     }
   }
 
@@ -202,48 +131,20 @@ export default function AdminUserManagement() {
     }
 
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'utilisateur a été supprimé.',
-        })
-        fetchUsers()
-      } else {
-        throw new Error('Failed to delete user')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de supprimer l\'utilisateur.',
-        variant: 'destructive',
-      })
+      await adminFetch(`/api/admin/users/${userId}`, { method: 'DELETE' })
+      toastSuccess('L\'utilisateur a été supprimé.')
+      fetchUsers()
+    } catch {
+      toastError('Impossible de supprimer l\'utilisateur.')
     }
   }
 
   const handleResetPassword = async (userId: string) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}/reset-password`, {
-        method: 'POST'
-      })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'Le mot de passe a été réinitialisé.',
-        })
-      } else {
-        throw new Error('Failed to reset password')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de réinitialiser le mot de passe.',
-        variant: 'destructive',
-      })
+      await adminFetch(`/api/admin/users/${userId}/reset-password`, { method: 'POST' })
+      toastSuccess('Le mot de passe a été réinitialisé.')
+    } catch {
+      toastError('Impossible de réinitialiser le mot de passe.')
     }
   }
 
@@ -319,8 +220,8 @@ export default function AdminUserManagement() {
               </div>
               <div className="flex gap-2">
                 <select
-                  value={roleFilter}
-                  onChange={(e) => setRoleFilter(e.target.value)}
+                  value={filters.role}
+                  onChange={(e) => setFilter('role', e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Tous les rôles</option>

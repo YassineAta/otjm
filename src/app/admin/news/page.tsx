@@ -1,6 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -23,7 +22,10 @@ import {
   User,
   Link as LinkIcon
 } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
+import { useAdminList } from '@/hooks/use-admin-list'
+import { useModalForm } from '@/hooks/use-modal-form'
+import { useTableFilter } from '@/hooks/use-table-filter'
+import { adminFetch, AdminApiError, toastSuccess, toastError } from '@/lib/admin-api'
 
 // --- DEFAULT IMAGE URL (Fixed for consistency) ---
 const DEFAULT_IMAGE_URL = '/otjmlogo.jpg';
@@ -53,91 +55,51 @@ const categoryLabels = {
   updates: 'Mises à jour'
 }
 
+const initialFormData = {
+  title: '',
+  excerpt: '',
+  content: '',
+  category: 'announcements',
+  imageUrl: '',
+  sourceUrl: '',
+  published: true
+}
+
 export default function NewsManagement() {
-  const [news, setNews] = useState<NewsItem[]>([])
-  const [filteredNews, setFilteredNews] = useState<NewsItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('all')
-  const [publishedFilter, setPublishedFilter] = useState('all')
-  const [showAddModal, setShowAddModal] = useState(false)
-  const [showEditModal, setShowEditModal] = useState(false)
-  const [showViewModal, setShowViewModal] = useState(false)
-  const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null)
+  const { items: news, loading, refetch: fetchNews } = useAdminList<NewsItem>('/api/news', {
+    errorMessage: 'Impossible de charger les actualités.',
+    map: (data) => data.map((item) => ({
+      ...item,
+      sourceUrl: item.sourceUrl || null,
+    })),
+  })
 
-  const initialFormData = {
-    title: '',
-    excerpt: '',
-    content: '',
-    category: 'announcements',
-    imageUrl: '',
-    sourceUrl: '',
-    published: true
-  }
-  const [formData, setFormData] = useState(initialFormData)
+  const {
+    search: searchTerm,
+    setSearch: setSearchTerm,
+    filters,
+    setFilter,
+    filtered: filteredNews,
+  } = useTableFilter(news, ['title', 'excerpt'], {
+    category: (item, value) => item.category === value,
+    published: (item, value) => item.published === (value === 'published'),
+  })
+
+  const {
+    showAdd: showAddModal,
+    setShowAdd: setShowAddModal,
+    showEdit: showEditModal,
+    setShowEdit: setShowEditModal,
+    showView: showViewModal,
+    setShowView: setShowViewModal,
+    selected: selectedNews,
+    setSelected: setSelectedNews,
+    formData,
+    setFormData,
+    reset: resetModalsAndForm,
+  } = useModalForm<NewsItem, typeof initialFormData>(initialFormData)
+
   const router = useRouter()
-
-  const resetModalsAndForm = () => {
-    setShowAddModal(false)
-    setShowEditModal(false)
-    setShowViewModal(false)
-    setSelectedNews(null)
-    setFormData(initialFormData)
-  }
-
-  useEffect(() => {
-    fetchNews()
-  }, [])
-
-  useEffect(() => {
-    filterNews()
-  }, [news, searchTerm, categoryFilter, publishedFilter])
-
-  const fetchNews = async () => {
-    try {
-      const response = await fetch('/api/news')
-      if (response.ok) {
-        const data = await response.json()
-
-        const mappedData: NewsItem[] = data.map((item: any) => ({
-            ...item,
-            sourceUrl: item.sourceUrl || null,
-        }));
-
-        setNews(mappedData);
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de charger les actualités.',
-        variant: 'destructive',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const filterNews = () => {
-    let filtered = news
-
-    if (searchTerm) {
-      filtered = filtered.filter(item =>
-        item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    }
-
-    if (categoryFilter !== 'all') {
-      filtered = filtered.filter(item => item.category === categoryFilter)
-    }
-
-    if (publishedFilter !== 'all') {
-      const isPublished = publishedFilter === 'published'
-      filtered = filtered.filter(item => item.published === isPublished)
-    }
-
-    setFilteredNews(filtered)
-  }
 
   // --- SUBMIT (CREATE) FUNCTION - FIXED AUTHOR ID RETRIEVAL ---
   const handleSubmit = async (e: React.FormEvent) => {
@@ -148,44 +110,22 @@ export default function NewsManagement() {
     const authorId = 'admin';
 
     try {
-      const response = await fetch('/api/news', {
+      await adminFetch('/api/news', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+        body: {
           ...formData,
           imageUrl: finalImageUrl,
           authorId: authorId, // Use the verified logged-in ID
-        })
+        },
       })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'actualité a été créée.',
-        })
-        resetModalsAndForm()
-        fetchNews()
-      } else {
-        const errorDetails = await response.json().catch(() => ({}));
-        toast({
-            title: 'Erreur',
-            description: `Impossible de créer l\'actualité. (Vérifiez si l'ID d'auteur existe dans la table User)`,
-            variant: 'destructive',
-        });
-        throw new Error(errorDetails.message || 'Failed to create news');
-      }
+      toastSuccess('L\'actualité a été créée.')
+      resetModalsAndForm()
+      fetchNews()
     } catch (error) {
-      // Catch block is simplified as the error is usually handled above
-      if (error instanceof Error && error.message.includes('Failed to create news')) {
-          // Do nothing, toast was shown above
+      if (error instanceof AdminApiError) {
+        toastError(`Impossible de créer l\'actualité. (Vérifiez si l'ID d'auteur existe dans la table User)`)
       } else {
-          toast({
-              title: 'Erreur',
-              description: `Impossible de créer l\'actualité. (${error instanceof Error ? error.message : 'Erreur inconnue'})`,
-              variant: 'destructive',
-          });
+        toastError(`Impossible de créer l\'actualité. (${error instanceof Error ? error.message : 'Erreur inconnue'})`)
       }
     }
   }
@@ -218,33 +158,18 @@ export default function NewsManagement() {
     const finalImageUrl = formData.imageUrl.trim() || DEFAULT_IMAGE_URL;
 
     try {
-      const response = await fetch(`/api/news/${selectedNews.id}`, {
+      await adminFetch(`/api/news/${selectedNews.id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+        body: {
           ...formData,
           imageUrl: finalImageUrl,
-        })
+        },
       })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'actualité a été mise à jour.',
-        })
-        resetModalsAndForm()
-        fetchNews()
-      } else {
-        throw new Error('Failed to update news')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de mettre à jour l\'actualité.',
-        variant: 'destructive',
-      })
+      toastSuccess('L\'actualité a été mise à jour.')
+      resetModalsAndForm()
+      fetchNews()
+    } catch {
+      toastError('Impossible de mettre à jour l\'actualité.')
     }
   }
 
@@ -254,53 +179,24 @@ export default function NewsManagement() {
     }
 
     try {
-      const response = await fetch(`/api/news/${id}`, {
-        method: 'DELETE'
-      })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: 'L\'actualité a été supprimée.',
-        })
-        fetchNews()
-      } else {
-        throw new Error('Failed to delete news')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de supprimer l\'actualité.',
-        variant: 'destructive',
-      })
+      await adminFetch(`/api/news/${id}`, { method: 'DELETE' })
+      toastSuccess('L\'actualité a été supprimée.')
+      fetchNews()
+    } catch {
+      toastError('Impossible de supprimer l\'actualité.')
     }
   }
 
   const togglePublish = async (id: string, currentStatus: boolean) => {
     try {
-      const response = await fetch(`/api/news/${id}`, {
+      await adminFetch(`/api/news/${id}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ published: !currentStatus })
+        body: { published: !currentStatus },
       })
-
-      if (response.ok) {
-        toast({
-          title: 'Succès',
-          description: `L'actualité a été ${!currentStatus ? 'publiée' : 'dépubliée'}.`,
-        })
-        fetchNews()
-      } else {
-        throw new Error('Failed to toggle publish status')
-      }
-    } catch (error) {
-      toast({
-        title: 'Erreur',
-        description: 'Impossible de modifier le statut de publication.',
-        variant: 'destructive',
-      })
+      toastSuccess(`L'actualité a été ${!currentStatus ? 'publiée' : 'dépubliée'}.`)
+      fetchNews()
+    } catch {
+      toastError('Impossible de modifier le statut de publication.')
     }
   }
 
@@ -361,8 +257,8 @@ export default function NewsManagement() {
               <div className="flex gap-2">
                 {/* Category Filter - FIXED */}
                 <select
-                  value={categoryFilter}
-                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  value={filters.category}
+                  onChange={(e) => setFilter('category', e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Toutes les catégories</option>
@@ -373,8 +269,8 @@ export default function NewsManagement() {
                 </select>
                 {/* Published Filter - FIXED */}
                 <select
-                  value={publishedFilter}
-                  onChange={(e) => setPublishedFilter(e.target.value)}
+                  value={filters.published}
+                  onChange={(e) => setFilter('published', e.target.value)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--otjm-red)]"
                 >
                   <option value="all">Tous les statuts</option>
