@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-// @ts-ignore
-import * as XLSX from 'xlsx';
+// exceljs replaces the unmaintained `xlsx` npm package (prototype-pollution
+// CVEs, registry version frozen pre-fix — docs/SECURITY_REVIEW.md S8).
+import ExcelJS from 'exceljs';
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { Readable } from 'stream';
 
 import { tierForMemberStatus, priceForMemberStatus } from '@/lib/constants';
+import { encryptField } from '@/lib/crypto';
 
 export async function POST(request: NextRequest) {
     const auth = await requireAdmin()
@@ -18,11 +19,29 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ message: 'No file found.' }, { status: 400 });
         }
 
-        const buffer = Buffer.from(await file.arrayBuffer());
-        const workbook = XLSX.read(buffer, { type: 'buffer' });
-        const sheetName = workbook.SheetNames[0];
-        const worksheet = workbook.Sheets[sheetName];
-        const rawJsonData: any[] = XLSX.utils.sheet_to_json(worksheet);
+        const workbook = new ExcelJS.Workbook();
+        await workbook.xlsx.load(await file.arrayBuffer());
+        const worksheet = workbook.worksheets[0];
+        if (!worksheet) {
+            return NextResponse.json({ message: 'No worksheet found in file.' }, { status: 400 });
+        }
+
+        // Row 1 = headers; map each later row to { header: cellText }.
+        // cell.text flattens rich-text/hyperlink cells (emails are often
+        // hyperlinks in real spreadsheets); Date cells keep their Date value.
+        const headers: string[] = [];
+        worksheet.getRow(1).eachCell((cell, col) => { headers[col] = cell.text.trim() });
+        const rawJsonData: any[] = [];
+        worksheet.eachRow((row, rowNumber) => {
+            if (rowNumber === 1) return;
+            const obj: Record<string, unknown> = {};
+            row.eachCell((cell, col) => {
+                const key = headers[col];
+                if (!key) return;
+                obj[key] = cell.value instanceof Date ? cell.value : cell.text.trim();
+            });
+            if (Object.keys(obj).length) rawJsonData.push(obj);
+        });
 
         if (rawJsonData.length === 0) {
             return NextResponse.json({ message: 'File is empty or data could not be parsed.' }, { status: 400 });
@@ -74,8 +93,8 @@ export async function POST(request: NextRequest) {
                 // Detailed Form Data
                 memberStatus: memberStatus,
                 faculty: row.faculty || null,
-                cin: row.cin?.toString() || null,
-                phone: row.phone?.toString() || null,
+                cin: encryptField(row.cin?.toString()),
+                phone: encryptField(row.phone?.toString()),
                 dateOfBirth: row.dateOfBirth ? new Date(row.dateOfBirth) : null,
             });
         }

@@ -22,7 +22,7 @@ const mockedUpdate = vi.mocked(db.membership.update)
 
 const pendingMembership = {
   id: 'm1', price: 20, paymentStatus: 'pending', status: 'pending',
-} as never
+}
 
 function flouciSays(status: string, amountMillimes: number, success = true) {
   mockedVerify.mockResolvedValue({
@@ -34,7 +34,7 @@ beforeEach(() => vi.clearAllMocks())
 
 describe('settlePayment', () => {
   it('activates a pending membership on SUCCESS with the exact amount', async () => {
-    mockedFind.mockResolvedValue(pendingMembership)
+    mockedFind.mockResolvedValue(pendingMembership as never)
     flouciSays('SUCCESS', 20_000)
 
     const r = await settlePayment('pay1', 'return')
@@ -47,7 +47,7 @@ describe('settlePayment', () => {
   })
 
   it('REFUSES to activate on SUCCESS with a wrong amount', async () => {
-    mockedFind.mockResolvedValue(pendingMembership)
+    mockedFind.mockResolvedValue(pendingMembership as never)
     flouciSays('SUCCESS', 5_000) // paid 5 DT for a 20 DT tier
 
     const r = await settlePayment('pay1', 'webhook')
@@ -57,7 +57,7 @@ describe('settlePayment', () => {
   })
 
   it('marks failed on FAILURE/EXPIRED', async () => {
-    mockedFind.mockResolvedValue(pendingMembership)
+    mockedFind.mockResolvedValue(pendingMembership as never)
     flouciSays('EXPIRED', 0, false)
 
     const r = await settlePayment('pay1', 'return')
@@ -70,7 +70,7 @@ describe('settlePayment', () => {
   })
 
   it('leaves a PENDING-at-Flouci payment untouched', async () => {
-    mockedFind.mockResolvedValue(pendingMembership)
+    mockedFind.mockResolvedValue(pendingMembership as never)
     flouciSays('PENDING', 20_000, false)
 
     const r = await settlePayment('pay1', 'webhook')

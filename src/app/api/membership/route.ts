@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { adminMembershipCreateSchema, firstZodError } from '@/lib/schemas';
+import { encryptField, decryptField } from '@/lib/crypto';
 
 // Admin-only manual member entry (e.g. cash payments at a stand).
 // The middleware also blocks this route for non-admins in production, but the
@@ -50,8 +51,8 @@ export async function POST(request: NextRequest) {
                 endDate: data.endDate,
                 memberStatus: data.memberStatus,
                 faculty: data.faculty ?? null,
-                cin: data.cin ?? null,
-                phone: data.phone ?? null,
+                cin: encryptField(data.cin),
+                phone: encryptField(data.phone),
                 dateOfBirth: data.dateOfBirth ?? null,
             }
         });
@@ -88,7 +89,12 @@ export async function GET(request: NextRequest) {
       }
     })
 
-    return NextResponse.json(memberships)
+    // PII is encrypted at rest — decrypt for the (admin-only) consumer.
+    return NextResponse.json(memberships.map(m => ({
+      ...m,
+      cin: decryptField(m.cin),
+      phone: decryptField(m.phone),
+    })))
   } catch {
     return NextResponse.json(
       { error: 'Failed to fetch memberships' },

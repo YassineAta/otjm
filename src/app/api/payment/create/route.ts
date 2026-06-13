@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { createPayment, TIER_PRICING } from '@/lib/flouci'
 import { paymentCreateSchema, firstZodError } from '@/lib/schemas'
+import { encryptField } from '@/lib/crypto'
 
 function appBaseUrl(req: NextRequest) {
   // Prefer explicit config (correct in prod behind proxy). Fall back to request origin.
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
   const fields = {
     name: data.fullName, tier: data.tier, price: pricing.priceTnd,
     memberStatus: data.memberStatus, faculty: data.faculty ?? null,
-    cin: data.cin ?? null, phone: data.phone ?? null,
+    cin: encryptField(data.cin), phone: encryptField(data.phone),
     dateOfBirth: data.dateOfBirth ?? null,
     paymentMethod: 'Flouci', paymentStatus: 'pending', status: 'pending',
   }
