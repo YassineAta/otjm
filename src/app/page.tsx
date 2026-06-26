@@ -817,11 +817,13 @@ export default function OTJMHome() {
               <div className="space-y-3">
                 <div className="flex items-start gap-2 text-sm text-white/60">
                   <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-[var(--otjm-red)]" />
-                  <span>Rue 9 avril, Bab Saadoun, Tunis 1002</span>
+                  <span>Apt A 32, 3e étage, Bardo Palace, 2000 Bardo</span>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-white/60">
                   <Phone className="w-4 h-4 shrink-0 text-[var(--otjm-red)]" />
-                  <a href="tel:+21658998045" className="hover:text-white transition-colors">+216 58 998 045</a>
+                  <a href="tel:+21671414095" className="hover:text-white transition-colors">+216 71 414 095</a>
+                  <span className="text-white/30">/</span>
+                  <a href="tel:+21698655883" className="hover:text-white transition-colors">+216 98 655 883</a>
                 </div>
                 <div className="flex items-center gap-2 text-sm text-white/60">
                   <Mail className="w-4 h-4 shrink-0 text-[var(--otjm-red)]" />

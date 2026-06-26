@@ -70,7 +70,9 @@ export function SiteFooter() {
               </div>
               <div className="flex items-center gap-2 text-sm text-white/60">
                 <Phone className="w-4 h-4 shrink-0 text-[var(--otjm-red)]" />
-                <a href="tel:+21658998045" className="hover:text-white transition-colors">+216 58 998 045</a>
+                <a href="tel:+21671414095" className="hover:text-white transition-colors">+216 71 414 095</a>
+                <span className="text-white/30">/</span>
+                <a href="tel:+21698655883" className="hover:text-white transition-colors">+216 98 655 883</a>
               </div>
               <div className="flex items-center gap-2 text-sm text-white/60">
                 <Mail className="w-4 h-4 shrink-0 text-[var(--otjm-red)]" />

@@ -12,7 +12,7 @@ const SECTIONS = [
       <>
         <p>
           L&apos;Organisation Tunisienne des Jeunes Médecins (OTJM), association à but non lucratif dont le
-          siège est situé Rue 9 avril, Bab Saadoun, Tunis 1002, est responsable du traitement des données
+          siège est situé Apt A 32, 3e étage, Bardo Palace, 2000 Bardo, est responsable du traitement des données
           personnelles collectées via le site <strong>otjm.tn</strong>.
         </p>
         <p className="mt-3">
