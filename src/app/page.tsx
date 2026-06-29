@@ -11,7 +11,7 @@ import {
   MapPin, Phone, Mail, ChevronRight, Facebook, Instagram,
   Users, Clock, Sun, Moon, GraduationCap, Stethoscope, Check, ChevronDown, FileText,
 } from 'lucide-react'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/otjm/LocaleLink'
 import { formatDate } from '@/lib/utils'
 import { CATEGORIES, type Category } from '@/lib/constants'
 import { EASE, fadeUp, fadeUpReduced, stagger, staggerReduced } from '@/lib/animations'

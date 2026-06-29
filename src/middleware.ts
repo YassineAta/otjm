@@ -16,7 +16,26 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const path = req.nextUrl.pathname
+  const original = req.nextUrl.pathname
+
+  // ── Locale layer ──────────────────────────────────────────────────────────
+  // French is the default and lives at the root (/news, /membership…), so its
+  // existing search rankings are untouched. Arabic is served at /ar/* by
+  // rewriting to the SAME page tree while the browser URL keeps /ar — that
+  // gives Arabic its own indexable URLs. The resolved locale is forwarded to
+  // the server render via a request header so <html lang/dir> is correct in
+  // the initial HTML (no client flash, crawler sees the right language).
+  const isArabic = original === '/ar' || original.startsWith('/ar/')
+  const path = isArabic ? original.slice(3) || '/' : original
+
+  const reqHeaders = new Headers(req.headers)
+  reqHeaders.set('x-otjm-locale', isArabic ? 'ar' : 'fr')
+
+  // Final pass-through for public pages: rewrite /ar/* → /* (locale in header).
+  const passThrough = () =>
+    isArabic
+      ? NextResponse.rewrite(new URL(path, req.url), { request: { headers: reqHeaders } })
+      : NextResponse.next({ request: { headers: reqHeaders } })
 
   // Secret entry: /{SLUG}/* → rewrite to /admin/*
   if (path === `/${SLUG}` || path.startsWith(`/${SLUG}/`)) {
@@ -47,7 +66,7 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  return NextResponse.next()
+  return passThrough()
 }
 
 export const config = {

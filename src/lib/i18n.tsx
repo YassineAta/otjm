@@ -1,6 +1,7 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useEffect, ReactNode } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 
 export type Lang = 'fr' | 'ar'
 
@@ -426,25 +427,38 @@ const LanguageContext = createContext<LanguageContextType>({
   t: fr,
 })
 
+// Strip the optional /ar locale prefix off a pathname, yielding the
+// default-locale (French) path. '/ar' and '/ar/news' → '/' and '/news'.
+function stripLocale(pathname: string): string {
+  if (pathname === '/ar' || pathname.startsWith('/ar/')) return pathname.slice(3) || '/'
+  return pathname
+}
+
+// Prefix an internal href with /ar when the active language is Arabic.
+// External/anchor hrefs and already-prefixed paths are left untouched.
+export function localeHref(href: string, lang: Lang): string {
+  if (lang !== 'ar' || !href.startsWith('/') || href.startsWith('/ar/') || href === '/ar') return href
+  return href === '/' ? '/ar' : '/ar' + href
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('fr')
-  const [mounted, setMounted] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
+  // The URL is the single source of truth for language: /ar/* → Arabic,
+  // everything else → French. This resolves identically on the server and the
+  // client, so the initial HTML is already in the right language for crawlers.
+  const lang: Lang = pathname === '/ar' || pathname.startsWith('/ar/') ? 'ar' : 'fr'
 
   useEffect(() => {
-    setMounted(true)
-    const saved = localStorage.getItem('otjm-lang') as Lang | null
-    if (saved === 'ar') setLangState('ar')
-  }, [])
-
-  useEffect(() => {
-    if (!mounted) return
     document.documentElement.lang = lang
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr'
-  }, [lang, mounted])
+  }, [lang])
 
+  // Switching language = navigating to the same page in the other locale.
   const setLang = (l: Lang) => {
-    setLangState(l)
-    localStorage.setItem('otjm-lang', l)
+    if (l === lang) return
+    const base = stripLocale(pathname)
+    router.push(l === 'ar' ? localeHref(base, 'ar') : base)
   }
 
   const t = lang === 'ar' ? ar : fr

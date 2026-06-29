@@ -3,7 +3,7 @@ import { X } from 'lucide-react'
 import { SiteHeader } from '@/components/otjm/SiteHeader'
 import { SiteFooter } from '@/components/otjm/SiteFooter'
 
-export const metadata = { title: 'Paiement non abouti — OTJM' }
+export const metadata = { title: 'Paiement non abouti — OTJM', robots: { index: false, follow: true }, alternates: { canonical: '/membership/failed' } }
 
 export default function MembershipFailedPage() {
   return (

@@ -12,3 +12,8 @@ Allow: /
 
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /setup
+Disallow: /api/
+
+Sitemap: https://otjm.org.tn/sitemap.xml

@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/otjm/LocaleLink'
 import Image from 'next/image'
 import { Facebook, Instagram, MapPin, Phone, Mail, FileText } from 'lucide-react'
 import { useLanguage } from '@/lib/i18n'

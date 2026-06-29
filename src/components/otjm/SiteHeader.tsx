@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import Link from 'next/link'
+import { LocaleLink as Link } from '@/components/otjm/LocaleLink'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { Sun, Moon, Menu, X } from 'lucide-react'
@@ -21,7 +21,9 @@ export function SiteHeader({ isDark = true, onToggleDark, onSignupClick }: Props
   const [menuOpen, setMenuOpen] = useState(false)
   const pathname = usePathname()
   const { t, lang, setLang } = useLanguage()
-  const active = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href)
+  // Compare against the locale-stripped path so /ar/news still marks "News" active.
+  const basePath = lang === 'ar' ? pathname.slice(3) || '/' : pathname
+  const active = (href: string) => href === '/' ? basePath === '/' : basePath.startsWith(href)
 
   const navLabels = [t.nav.home, t.nav.news, t.nav.archives, t.nav.membership]
 

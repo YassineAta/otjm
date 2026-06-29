@@ -3,7 +3,7 @@ import { Check } from 'lucide-react'
 import { SiteHeader } from '@/components/otjm/SiteHeader'
 import { SiteFooter } from '@/components/otjm/SiteFooter'
 
-export const metadata = { title: 'Paiement confirmé — OTJM' }
+export const metadata = { title: 'Paiement confirmé — OTJM', robots: { index: false, follow: true }, alternates: { canonical: '/membership/success' } }
 
 export default function MembershipSuccessPage() {
   return (
