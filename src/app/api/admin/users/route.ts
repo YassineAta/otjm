@@ -26,9 +26,11 @@ export async function POST(req: NextRequest) {
     const name = sanitize(body.name, 256)
     const role = body.role
 
-    if (!email || !name || !role) return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
+    if (!email || !name || !role)
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     if (!isValidEmail(email)) return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
-    if (!VALID_ROLES.includes(role)) return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
+    if (!VALID_ROLES.includes(role))
+      return NextResponse.json({ error: 'Invalid role' }, { status: 400 })
 
     const exists = await db.user.findUnique({ where: { email } })
     if (exists) return NextResponse.json({ error: 'User already exists' }, { status: 400 })

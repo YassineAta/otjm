@@ -5,9 +5,21 @@ const SLUG = process.env.ADMIN_SLUG || 'admin'
 const ADMIN_ROLES = ['admin', 'superadmin']
 // NOTE: prefixes only. Deliberately does NOT include '/api/membership' — that
 // surface is admin-only; its payment-facing sibling lives under '/api/payment'.
-const PUBLIC_API = ['/api/auth', '/api/contact', '/api/newsletter', '/api/news', '/api/archives', '/api/setup', '/api/payment']
+const PUBLIC_API = [
+  '/api/auth',
+  '/api/contact',
+  '/api/newsletter',
+  '/api/news',
+  '/api/archives',
+  '/api/setup',
+  '/api/payment',
+]
 
-interface Token { role?: string; id?: string; email?: string }
+interface Token {
+  role?: string
+  id?: string
+  email?: string
+}
 
 export async function middleware(req: NextRequest) {
   // Auth bypass needs BOTH dev mode and an explicit opt-in flag, so a
@@ -45,7 +57,7 @@ export async function middleware(req: NextRequest) {
 
   // /admin/* → 404 unless authenticated admin
   if (path.startsWith('/admin')) {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET }) as Token | null
+    const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as Token | null
     if (!token?.role || !ADMIN_ROLES.includes(token.role)) {
       return new NextResponse(null, { status: 404 })
     }
@@ -53,13 +65,13 @@ export async function middleware(req: NextRequest) {
   }
 
   // Public API — allow through
-  if (path.startsWith('/api/') && PUBLIC_API.some(p => path.startsWith(p))) {
+  if (path.startsWith('/api/') && PUBLIC_API.some((p) => path.startsWith(p))) {
     return NextResponse.next()
   }
 
   // Protected API — require auth + admin role
   if (path.startsWith('/api/')) {
-    const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET }) as Token | null
+    const token = (await getToken({ req, secret: process.env.NEXTAUTH_SECRET })) as Token | null
     if (!token?.role || !ADMIN_ROLES.includes(token.role)) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }

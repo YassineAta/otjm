@@ -23,11 +23,11 @@ function authHeader() {
 export type FlouciStatus = 'SUCCESS' | 'PENDING' | 'EXPIRED' | 'FAILURE'
 
 export interface CreatePaymentInput {
-  amountTnd: number          // e.g. 10 for 10 DT
-  successLink: string        // absolute URL on our site
-  failLink: string           // absolute URL on our site
-  trackingId: string         // our membership.id — echoed back on verify
-  webhookUrl?: string        // absolute URL, optional but recommended
+  amountTnd: number // e.g. 10 for 10 DT
+  successLink: string // absolute URL on our site
+  failLink: string // absolute URL on our site
+  trackingId: string // our membership.id — echoed back on verify
+  webhookUrl?: string // absolute URL, optional but recommended
   sessionTimeoutSecs?: number
   acceptCard?: boolean
 }

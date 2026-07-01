@@ -8,8 +8,11 @@ import nodemailer from 'nodemailer'
 
 export function isMailConfigured(): boolean {
   return Boolean(
-    process.env.SMTP_HOST && process.env.SMTP_PORT &&
-    process.env.SMTP_USER && process.env.SMTP_PASS && process.env.MAIL_FROM,
+    process.env.SMTP_HOST &&
+    process.env.SMTP_PORT &&
+    process.env.SMTP_USER &&
+    process.env.SMTP_PASS &&
+    process.env.MAIL_FROM,
   )
 }
 
@@ -27,7 +30,7 @@ function getTransporter() {
 export interface CardEmailInput {
   to: string
   fullName: string
-  cardNumberLabel: string   // e.g. "0007"
+  cardNumberLabel: string // e.g. "0007"
   png: Buffer
   pdf: Buffer
 }
@@ -51,8 +54,16 @@ export async function sendMemberCardEmail(input: CardEmailInput): Promise<void> 
     subject,
     html,
     attachments: [
-      { filename: `carte-otjm-${input.cardNumberLabel}.png`, content: input.png, contentType: 'image/png' },
-      { filename: `carte-otjm-${input.cardNumberLabel}.pdf`, content: input.pdf, contentType: 'application/pdf' },
+      {
+        filename: `carte-otjm-${input.cardNumberLabel}.png`,
+        content: input.png,
+        contentType: 'image/png',
+      },
+      {
+        filename: `carte-otjm-${input.cardNumberLabel}.pdf`,
+        content: input.pdf,
+        contentType: 'application/pdf',
+      },
     ],
   })
 }

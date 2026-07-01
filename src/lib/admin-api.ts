@@ -46,7 +46,7 @@ export async function adminFetch(url: string, options: AdminFetchOptions = {}): 
     const details = await response.json().catch(() => ({}))
     throw new AdminApiError(
       details.error || details.message || options.fallbackError || `Erreur ${response.status}`,
-      response.status
+      response.status,
     )
   }
 

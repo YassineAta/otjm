@@ -16,24 +16,33 @@ interface Props {
 
 export function MembershipSignupModal({ open, tier, tierLabel, priceTnd, onClose }: Props) {
   const [form, setForm] = useState({
-    fullName: '', email: '', phone: '', cin: '',
-    dateOfBirth: '', faculty: '', memberStatus: '',
+    fullName: '',
+    email: '',
+    phone: '',
+    cin: '',
+    dateOfBirth: '',
+    faculty: '',
+    memberStatus: '',
   })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (open) { setError(null); setSubmitting(false) }
+    if (open) {
+      setError(null)
+      setSubmitting(false)
+    }
   }, [open])
 
-  const update = (k: keyof typeof form) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
+  const update =
+    (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
       setForm((f) => ({ ...f, [k]: e.target.value }))
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!tier) return
-    setSubmitting(true); setError(null)
+    setSubmitting(true)
+    setError(null)
     try {
       const res = await fetch('/api/payment/create', {
         method: 'POST',
@@ -57,7 +66,9 @@ export function MembershipSignupModal({ open, tier, tierLabel, priceTnd, onClose
     <AnimatePresence>
       {open && tier && (
         <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
           onClick={onClose}
         >
@@ -72,7 +83,10 @@ export function MembershipSignupModal({ open, tier, tierLabel, priceTnd, onClose
           >
             <div className="flex items-start justify-between mb-5">
               <div>
-                <h2 className="font-editorial text-2xl font-bold" style={{ color: 'var(--otjm-text)' }}>
+                <h2
+                  className="font-editorial text-2xl font-bold"
+                  style={{ color: 'var(--otjm-text)' }}
+                >
                   Adhésion {tierLabel}
                 </h2>
                 <p className="text-sm mt-1" style={{ color: 'var(--otjm-text-muted)' }}>
@@ -85,16 +99,35 @@ export function MembershipSignupModal({ open, tier, tierLabel, priceTnd, onClose
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3">
-              <Field label="Nom complet *" value={form.fullName} onChange={update('fullName')} required />
-              <Field label="Email *" type="email" value={form.email} onChange={update('email')} required />
+              <Field
+                label="Nom complet *"
+                value={form.fullName}
+                onChange={update('fullName')}
+                required
+              />
+              <Field
+                label="Email *"
+                type="email"
+                value={form.email}
+                onChange={update('email')}
+                required
+              />
               <Field label="Téléphone" type="tel" value={form.phone} onChange={update('phone')} />
               <Field label="CIN" value={form.cin} onChange={update('cin')} />
-              <Field label="Date de naissance" type="date" value={form.dateOfBirth} onChange={update('dateOfBirth')} />
-              <Field label="Faculté" value={form.faculty} onChange={update('faculty')} placeholder="Faculté de médecine de Tunis" />
+              <Field
+                label="Date de naissance"
+                type="date"
+                value={form.dateOfBirth}
+                onChange={update('dateOfBirth')}
+              />
+              <Field
+                label="Faculté"
+                value={form.faculty}
+                onChange={update('faculty')}
+                placeholder="Faculté de médecine de Tunis"
+              />
 
-              {error && (
-                <div className="text-sm text-[var(--otjm-red)] px-1">{error}</div>
-              )}
+              {error && <div className="text-sm text-[var(--otjm-red)] px-1">{error}</div>}
 
               <button
                 type="submit"
@@ -116,7 +149,12 @@ export function MembershipSignupModal({ open, tier, tierLabel, priceTnd, onClose
 }
 
 function Field({
-  label, value, onChange, type = 'text', required = false, placeholder,
+  label,
+  value,
+  onChange,
+  type = 'text',
+  required = false,
+  placeholder,
 }: {
   label: string
   value: string
@@ -127,7 +165,10 @@ function Field({
 }) {
   return (
     <label className="block">
-      <span className="text-xs font-semibold uppercase tracking-wide mb-1 block" style={{ color: 'var(--otjm-text-muted)' }}>
+      <span
+        className="text-xs font-semibold uppercase tracking-wide mb-1 block"
+        style={{ color: 'var(--otjm-text-muted)' }}
+      >
         {label}
       </span>
       <input

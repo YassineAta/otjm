@@ -40,40 +40,43 @@ flowchart LR
 ## 3. Route inventory
 
 ### Public pages
-| Path | Purpose | Key file |
-|---|---|---|
-| `/` | Hero landing, latest news, membership CTA | `src/app/page.tsx` (863 lines, monolithic client component) |
-| `/news` | News list with filters/search | `src/app/news/page.tsx` |
-| `/archives` | Historical documents | `src/app/archives/page.tsx` |
-| `/membership` | Signup wizard → pricing → modal form | `src/app/membership/page.tsx` + `src/components/otjm/MembershipSignupModal.tsx` |
-| `/membership/success` `/membership/failed` | Post-payment landing | `src/app/membership/{success,failed}/page.tsx` |
-| `/privacy` | RGPD policy | `src/app/privacy/page.tsx` |
-| `/setup` | First-admin bootstrap form | `src/app/setup/page.tsx` |
+
+| Path                                       | Purpose                                   | Key file                                                                        |
+| ------------------------------------------ | ----------------------------------------- | ------------------------------------------------------------------------------- |
+| `/`                                        | Hero landing, latest news, membership CTA | `src/app/page.tsx` (863 lines, monolithic client component)                     |
+| `/news`                                    | News list with filters/search             | `src/app/news/page.tsx`                                                         |
+| `/archives`                                | Historical documents                      | `src/app/archives/page.tsx`                                                     |
+| `/membership`                              | Signup wizard → pricing → modal form      | `src/app/membership/page.tsx` + `src/components/otjm/MembershipSignupModal.tsx` |
+| `/membership/success` `/membership/failed` | Post-payment landing                      | `src/app/membership/{success,failed}/page.tsx`                                  |
+| `/privacy`                                 | RGPD policy                               | `src/app/privacy/page.tsx`                                                      |
+| `/setup`                                   | First-admin bootstrap form                | `src/app/setup/page.tsx`                                                        |
 
 ### Admin pages (middleware-protected, reached via `/{ADMIN_SLUG}` rewrite)
-| Path | Purpose |
-|---|---|
-| `/admin` | Login form (NextAuth credentials) |
-| `/admin/dashboard` | Stats overview |
-| `/admin/members` | Membership CRUD + XLSX bulk import |
-| `/admin/users` | Admin user CRUD |
-| `/admin/news` / `/admin/archives` | Content CRUD |
+
+| Path                              | Purpose                            |
+| --------------------------------- | ---------------------------------- |
+| `/admin`                          | Login form (NextAuth credentials)  |
+| `/admin/dashboard`                | Stats overview                     |
+| `/admin/members`                  | Membership CRUD + XLSX bulk import |
+| `/admin/users`                    | Admin user CRUD                    |
+| `/admin/news` / `/admin/archives` | Content CRUD                       |
 
 ### API routes
-| Route | Methods | Auth | Rate limit | Models |
-|---|---|---|---|---|
-| `/api/auth/[...nextauth]` | * | — (is the auth endpoint) | — | Admin, User |
-| `/api/payment/create` | POST | public | 5/60s | Membership |
-| `/api/payment/return` | GET | public | — | Membership |
-| `/api/payment/webhook` | POST | public | — | Membership |
-| `/api/contact` | POST public / GET admin | mixed | 5/60s | Contact |
-| `/api/newsletter` | POST public / GET admin | mixed | 5/60s | Newsletter |
-| `/api/news`, `/api/news/[id]` | GET public / POST PATCH DELETE admin | mixed | — | News |
-| `/api/archives`, `/api/archives/[id]` | GET public / POST PATCH DELETE admin | mixed | — | Archive |
-| `/api/membership`, `/api/membership/[id]` | GET POST PATCH DELETE | admin | — | Membership |
-| `/api/membership/bulk-import` | POST | admin | — | Membership |
-| `/api/admin/users`, `/api/admin/users/[id]` | GET POST PATCH DELETE | admin | — | User/Admin |
-| `/api/setup` | POST | **public (one-shot bootstrap)** | — | Admin |
+
+| Route                                       | Methods                              | Auth                            | Rate limit | Models      |
+| ------------------------------------------- | ------------------------------------ | ------------------------------- | ---------- | ----------- |
+| `/api/auth/[...nextauth]`                   | *                                    | — (is the auth endpoint)        | —          | Admin, User |
+| `/api/payment/create`                       | POST                                 | public                          | 5/60s      | Membership  |
+| `/api/payment/return`                       | GET                                  | public                          | —          | Membership  |
+| `/api/payment/webhook`                      | POST                                 | public                          | —          | Membership  |
+| `/api/contact`                              | POST public / GET admin              | mixed                           | 5/60s      | Contact     |
+| `/api/newsletter`                           | POST public / GET admin              | mixed                           | 5/60s      | Newsletter  |
+| `/api/news`, `/api/news/[id]`               | GET public / POST PATCH DELETE admin | mixed                           | —          | News        |
+| `/api/archives`, `/api/archives/[id]`       | GET public / POST PATCH DELETE admin | mixed                           | —          | Archive     |
+| `/api/membership`, `/api/membership/[id]`   | GET POST PATCH DELETE                | admin                           | —          | Membership  |
+| `/api/membership/bulk-import`               | POST                                 | admin                           | —          | Membership  |
+| `/api/admin/users`, `/api/admin/users/[id]` | GET POST PATCH DELETE                | admin                           | —          | User/Admin  |
+| `/api/setup`                                | POST                                 | **public (one-shot bootstrap)** | —          | Admin       |
 
 > ⚠️ **Known critical bug:** `src/middleware.ts:6` `PUBLIC_API` whitelist omits `/api/payment` and the public branch of `/api/membership`. In production (`NODE_ENV !== 'development'` — the middleware short-circuits in dev) every payment call and Flouci webhook receives **401**, so the public signup flow is broken in prod. See `SECURITY_REVIEW.md` and `TECHNICAL_DEBT.md`.
 
@@ -110,6 +113,7 @@ erDiagram
 ```
 
 Key facts:
+
 - **`Admin` and `User` are separate collections.** `Admin` holds credentials; on each successful login, `authorize()` upserts a mirror `User` row so News/Archives can have an author relation (`src/app/api/auth/[...nextauth]/options.tsx`).
 - **`Membership` is standalone** — no relation to `User`. Members never log in; they exist only as records.
 - **PII (cin, phone, dateOfBirth) is stored in plaintext.** Encryption at rest is a planned improvement (the Laravel plan calls for application-level encryption; the Next.js codebase has none).
@@ -144,14 +148,16 @@ sequenceDiagram
 ```
 
 Design decisions already in place (keep these):
+
 - **Price authority is server-side** — `TIER_PRICING` in `src/lib/flouci.ts`; the client never sends an amount.
 - **Verify-don't-trust** — both `return` and `webhook` re-query Flouci with the secret key before mutating state.
 - **Monotonic state** — transitions only run when `paymentStatus === 'pending'`; a paid row is never demoted.
 
 Known gaps (see `TECHNICAL_DEBT.md` / improvement plan):
+
 - No amount cross-check on verify (verify response amount vs `membership.price`).
 - No payment-event audit log.
-- No email/card delivery after success — the success page *promises* "vous recevrez votre carte membre par email" but no email library exists in the project at all.
+- No email/card delivery after success — the success page _promises_ "vous recevrez votre carte membre par email" but no email library exists in the project at all.
 - Webhook has no rate limit.
 - The middleware 401 bug above blocks all of this in production.
 
@@ -161,7 +167,7 @@ Known gaps (see `TECHNICAL_DEBT.md` / improvement plan):
 2. `/admin` renders the login form → NextAuth credentials provider → bcrypt compare against the `Admin` collection.
 3. JWT session strategy; `role` and `id` are propagated into the token and session (typed in `types/next-auth.d.ts`).
 4. Defense in depth: middleware gate (server) + `AdminGuard`/`AdminSessionProvider` (client) + `requireAdmin()` in API routes (`src/lib/auth.ts`).
-5. **Dev bypass everywhere**: middleware, AdminGuard, AdminSessionProvider, and `requireAdmin()` all skip auth when `NODE_ENV === 'development'`. Convenient locally; means *no auth code path is exercised until production*.
+5. **Dev bypass everywhere**: middleware, AdminGuard, AdminSessionProvider, and `requireAdmin()` all skip auth when `NODE_ENV === 'development'`. Convenient locally; means _no auth code path is exercised until production_.
 
 First-admin bootstrap: `/setup` page → `POST /api/setup`, plus a legacy `createAdmin.js` CLI script at the repo root (duplicate mechanism — one should be removed).
 
@@ -175,18 +181,18 @@ First-admin bootstrap: `/setup` page → `POST /api/setup`, plus a legacy `creat
 
 ## 8. Where things live
 
-| Concern | Location |
-|---|---|
-| DB client singleton | `src/lib/db.ts` |
-| Flouci client + pricing | `src/lib/flouci.ts` |
-| Auth helpers (`requireAdmin`) | `src/lib/auth.ts` |
-| In-memory rate limiter | `src/lib/rate-limit.ts` (per-instance Map — resets on deploy, not multi-instance safe) |
-| i18n provider + dictionaries | `src/lib/i18n.tsx` |
-| Animation variants | `src/lib/animations.ts` |
-| Shared constants | `src/lib/constants.ts` (incomplete — pricing/image defaults still hardcoded in pages) |
-| Public site components | `src/components/otjm/` |
-| shadcn primitives (vendored — don't hand-edit) | `src/components/ui/` |
-| NextAuth type extensions | `types/next-auth.d.ts` |
+| Concern                                        | Location                                                                               |
+| ---------------------------------------------- | -------------------------------------------------------------------------------------- |
+| DB client singleton                            | `src/lib/db.ts`                                                                        |
+| Flouci client + pricing                        | `src/lib/flouci.ts`                                                                    |
+| Auth helpers (`requireAdmin`)                  | `src/lib/auth.ts`                                                                      |
+| In-memory rate limiter                         | `src/lib/rate-limit.ts` (per-instance Map — resets on deploy, not multi-instance safe) |
+| i18n provider + dictionaries                   | `src/lib/i18n.tsx`                                                                     |
+| Animation variants                             | `src/lib/animations.ts`                                                                |
+| Shared constants                               | `src/lib/constants.ts` (incomplete — pricing/image defaults still hardcoded in pages)  |
+| Public site components                         | `src/components/otjm/`                                                                 |
+| shadcn primitives (vendored — don't hand-edit) | `src/components/ui/`                                                                   |
+| NextAuth type extensions                       | `types/next-auth.d.ts`                                                                 |
 
 ## 9. How to extend
 

@@ -3,7 +3,11 @@ import { X } from 'lucide-react'
 import { SiteHeader } from '@/components/otjm/SiteHeader'
 import { SiteFooter } from '@/components/otjm/SiteFooter'
 
-export const metadata = { title: 'Paiement non abouti — OTJM', robots: { index: false, follow: true }, alternates: { canonical: '/membership/failed' } }
+export const metadata = {
+  title: 'Paiement non abouti — OTJM',
+  robots: { index: false, follow: true },
+  alternates: { canonical: '/membership/failed' },
+}
 
 export default function MembershipFailedPage() {
   return (
@@ -13,12 +17,15 @@ export default function MembershipFailedPage() {
         <div className="w-16 h-16 rounded-full border-2 border-[var(--otjm-red)] mx-auto mb-6 flex items-center justify-center">
           <X className="w-8 h-8 text-[var(--otjm-red)]" />
         </div>
-        <h1 className="font-editorial text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--otjm-text)' }}>
+        <h1
+          className="font-editorial text-3xl md:text-4xl font-bold mb-3"
+          style={{ color: 'var(--otjm-text)' }}
+        >
           Paiement non abouti
         </h1>
         <p className="mb-8" style={{ color: 'var(--otjm-text-muted)' }}>
-          Votre paiement n'a pas pu être confirmé. Aucun montant n'a été débité.
-          Vous pouvez réessayer ou nous contacter si le problème persiste.
+          Votre paiement n'a pas pu être confirmé. Aucun montant n'a été débité. Vous pouvez
+          réessayer ou nous contacter si le problème persiste.
         </p>
         <div className="flex gap-3 justify-center">
           <Link

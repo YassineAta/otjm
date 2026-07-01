@@ -11,13 +11,13 @@ import { db } from '@/lib/db'
 import { verifyPayment } from '@/lib/flouci'
 
 export type SettleOutcome =
-  | 'activated'        // pending → paid+active (the happy path)
-  | 'payment_failed'   // pending → failed (Flouci says FAILURE/EXPIRED)
-  | 'still_pending'    // Flouci still processing — leave row untouched
-  | 'already_final'    // row was settled earlier (duplicate callback) — no-op
-  | 'amount_mismatch'  // SUCCESS but wrong amount — NOT activated, flagged for admin
-  | 'unknown_payment'  // no membership carries this flouciPaymentId
-  | 'verify_error'     // Flouci verify call itself failed
+  | 'activated' // pending → paid+active (the happy path)
+  | 'payment_failed' // pending → failed (Flouci says FAILURE/EXPIRED)
+  | 'still_pending' // Flouci still processing — leave row untouched
+  | 'already_final' // row was settled earlier (duplicate callback) — no-op
+  | 'amount_mismatch' // SUCCESS but wrong amount — NOT activated, flagged for admin
+  | 'unknown_payment' // no membership carries this flouciPaymentId
+  | 'verify_error' // Flouci verify call itself failed
 
 export interface SettleResult {
   outcome: SettleOutcome
@@ -63,10 +63,17 @@ export async function settlePayment(
 
   if (membership.paymentStatus !== 'pending') {
     await logEvent({
-      membershipId: membership.id, flouciPaymentId: paymentId, source,
-      type: 'already_final', fromStatus: membership.paymentStatus,
+      membershipId: membership.id,
+      flouciPaymentId: paymentId,
+      source,
+      type: 'already_final',
+      fromStatus: membership.paymentStatus,
     })
-    return { outcome: 'already_final', membershipId: membership.id, paymentStatus: membership.paymentStatus }
+    return {
+      outcome: 'already_final',
+      membershipId: membership.id,
+      paymentStatus: membership.paymentStatus,
+    }
   }
 
   if (v.success && v.status === 'SUCCESS') {
@@ -74,8 +81,11 @@ export async function settlePayment(
     if (v.amountMillimes !== expectedMillimes) {
       // Wrong amount: do NOT activate. Row stays pending; admins see the event.
       await logEvent({
-        membershipId: membership.id, flouciPaymentId: paymentId, source,
-        type: 'amount_mismatch', fromStatus: 'pending',
+        membershipId: membership.id,
+        flouciPaymentId: paymentId,
+        source,
+        type: 'amount_mismatch',
+        fromStatus: 'pending',
         amountMillimes: v.amountMillimes,
         detail: `expected ${expectedMillimes} millimes`,
       })
@@ -87,8 +97,12 @@ export async function settlePayment(
       data: { paymentStatus: 'paid', status: 'active' },
     })
     await logEvent({
-      membershipId: membership.id, flouciPaymentId: paymentId, source,
-      type: 'verified_success', fromStatus: 'pending', toStatus: 'paid',
+      membershipId: membership.id,
+      flouciPaymentId: paymentId,
+      source,
+      type: 'verified_success',
+      fromStatus: 'pending',
+      toStatus: 'paid',
       amountMillimes: v.amountMillimes,
     })
     return { outcome: 'activated', membershipId: membership.id, paymentStatus: 'paid' }
@@ -100,8 +114,12 @@ export async function settlePayment(
       data: { paymentStatus: 'failed' },
     })
     await logEvent({
-      membershipId: membership.id, flouciPaymentId: paymentId, source,
-      type: 'verified_failure', fromStatus: 'pending', toStatus: 'failed',
+      membershipId: membership.id,
+      flouciPaymentId: paymentId,
+      source,
+      type: 'verified_failure',
+      fromStatus: 'pending',
+      toStatus: 'failed',
       detail: v.status,
     })
     return { outcome: 'payment_failed', membershipId: membership.id, paymentStatus: 'failed' }

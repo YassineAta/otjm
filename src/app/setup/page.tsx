@@ -62,14 +62,15 @@ export default function SetupPage() {
             </div>
             <CardTitle className="text-2xl text-center">Compte créé</CardTitle>
             <CardDescription className="text-center">
-              Le premier compte administrateur a été créé avec succès. Cette page d&apos;installation
-              est maintenant désactivée. Utilisez l&apos;URL admin secrète pour vous connecter.
+              Le premier compte administrateur a été créé avec succès. Cette page
+              d&apos;installation est maintenant désactivée. Utilisez l&apos;URL admin secrète pour
+              vous connecter.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <p className="text-sm text-gray-600 text-center">
-              Ferme cet onglet et va sur l&apos;URL admin fournie séparément pour te connecter
-              avec les identifiants que tu viens de créer.
+              Ferme cet onglet et va sur l&apos;URL admin fournie séparément pour te connecter avec
+              les identifiants que tu viens de créer.
             </p>
           </CardContent>
         </Card>
@@ -82,7 +83,13 @@ export default function SetupPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <Image src="/otjmlogo.jpg" alt="OTJM Logo" width={128} height={128} className="w-16 h-16 rounded-full" />
+            <Image
+              src="/otjmlogo.jpg"
+              alt="OTJM Logo"
+              width={128}
+              height={128}
+              className="w-16 h-16 rounded-full"
+            />
             <h1 className="text-3xl font-bold text-red-600">OTJM</h1>
           </div>
           <p className="text-gray-600">Installation initiale</p>
@@ -168,7 +175,11 @@ export default function SetupPage() {
                 </div>
               )}
 
-              <Button type="submit" className="w-full bg-red-600 hover:bg-red-700" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-red-600 hover:bg-red-700"
+                disabled={loading}
+              >
                 {loading ? 'Création...' : 'Créer le compte administrateur'}
               </Button>
             </form>

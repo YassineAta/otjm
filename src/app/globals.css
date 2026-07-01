@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -123,31 +123,53 @@
 
 /* ── OTJM design tokens ─────────────────────────────────────────────────── */
 :root {
-  --otjm-red:        #C8102E;
-  --otjm-red-dk:     #9B0B22;
-  --otjm-dark:       #0D0F14;
-  --otjm-ink:        #1A1D27;
-  --otjm-cream:      #FAF8F5;
-  --otjm-muted:      #6B7280;
-  --otjm-border:     #E5E1DC;
-  --otjm-surface:    #F2EFE9;
-  --otjm-bg:         #0D0F14;
-  --otjm-card:       #1A1D27;
-  --otjm-text:       #FFFFFF;
-  --otjm-text-muted: rgba(255,255,255,0.50);
+  --otjm-red: #c8102e;
+  --otjm-red-dk: #9b0b22;
+  --otjm-dark: #0d0f14;
+  --otjm-ink: #1a1d27;
+  --otjm-cream: #faf8f5;
+  --otjm-muted: #6b7280;
+  --otjm-border: #e5e1dc;
+  --otjm-surface: #f2efe9;
+  --otjm-bg: #0d0f14;
+  --otjm-card: #1a1d27;
+  --otjm-text: #ffffff;
+  --otjm-text-muted: rgba(255, 255, 255, 0.5);
 }
 .light-mode {
-  --otjm-bg:         #FAF8F5;
-  --otjm-card:       #FFFFFF;
-  --otjm-text:       #1A1D27;
-  --otjm-text-muted: #6B7280;
+  --otjm-bg: #faf8f5;
+  --otjm-card: #ffffff;
+  --otjm-text: #1a1d27;
+  --otjm-text-muted: #6b7280;
 }
-.font-editorial { font-family: var(--font-playfair), Georgia, serif; }
-.font-body      { font-family: var(--font-inter), system-ui, sans-serif; }
-[dir="rtl"] .font-body { font-family: var(--font-noto-arabic), var(--font-inter), system-ui, sans-serif; }
-[dir="rtl"] .font-editorial { font-family: var(--font-amiri), var(--font-noto-arabic), Georgia, serif; }
-[dir="rtl"] .rtl-flip { transform: scaleX(-1); }
-::selection     { background: var(--otjm-red); color: #fff; }
-*:focus-visible { outline: 2px solid var(--otjm-red); outline-offset: 2px; border-radius: 4px; }
-.scrollbar-none::-webkit-scrollbar { display: none; }
-.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+.font-editorial {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+.font-body {
+  font-family: var(--font-inter), system-ui, sans-serif;
+}
+[dir='rtl'] .font-body {
+  font-family: var(--font-noto-arabic), var(--font-inter), system-ui, sans-serif;
+}
+[dir='rtl'] .font-editorial {
+  font-family: var(--font-amiri), var(--font-noto-arabic), Georgia, serif;
+}
+[dir='rtl'] .rtl-flip {
+  transform: scaleX(-1);
+}
+::selection {
+  background: var(--otjm-red);
+  color: #fff;
+}
+*:focus-visible {
+  outline: 2px solid var(--otjm-red);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

@@ -1,24 +1,24 @@
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
-import * as dotenv from 'dotenv';
+import { PrismaClient } from '@prisma/client'
+import bcrypt from 'bcryptjs'
+import * as dotenv from 'dotenv'
 
-dotenv.config();
-const prisma = new PrismaClient();
+dotenv.config()
+const prisma = new PrismaClient()
 
 async function main() {
   try {
-    console.log('🌱 Starting fresh MongoDB seed...');
+    console.log('🌱 Starting fresh MongoDB seed...')
 
     // 1. Create Default Admin from .env (NO fallback defaults — credentials must be in .env)
-    const adminEmail = process.env.INITIAL_ADMIN_EMAIL;
-    const adminPassword = process.env.INITIAL_ADMIN_PASSWORD;
+    const adminEmail = process.env.INITIAL_ADMIN_EMAIL
+    const adminPassword = process.env.INITIAL_ADMIN_PASSWORD
     if (!adminEmail || !adminPassword) {
-      throw new Error('INITIAL_ADMIN_EMAIL and INITIAL_ADMIN_PASSWORD must be set in .env');
+      throw new Error('INITIAL_ADMIN_EMAIL and INITIAL_ADMIN_PASSWORD must be set in .env')
     }
     if (adminPassword.length < 12) {
-      throw new Error('INITIAL_ADMIN_PASSWORD must be at least 12 characters');
+      throw new Error('INITIAL_ADMIN_PASSWORD must be at least 12 characters')
     }
-    const hashedAdminPassword = await bcrypt.hash(adminPassword, 12);
+    const hashedAdminPassword = await bcrypt.hash(adminPassword, 12)
 
     const admin = await prisma.admin.upsert({
       where: { email: adminEmail },
@@ -29,8 +29,8 @@ async function main() {
         name: 'Main Administrator',
         role: 'superadmin',
       },
-    });
-    console.log('✅ Admin account created:', admin.email);
+    })
+    console.log('✅ Admin account created:', admin.email)
 
     // 2. Create a Staff User (to act as author for News/Archives)
     const author = await prisma.user.upsert({
@@ -41,10 +41,10 @@ async function main() {
         name: 'Staff Writer',
         role: 'admin',
       },
-    });
+    })
 
     // 3. Create Sample Member & Membership
-    const memberEmail = 'member@example.com';
+    const memberEmail = 'member@example.com'
     await prisma.membership.upsert({
       where: { email: memberEmail },
       update: {},
@@ -61,11 +61,11 @@ async function main() {
         memberStatus: 'Valid',
         faculty: 'Medicine Tunis',
       },
-    });
-    console.log('✅ Sample member created:', memberEmail);
+    })
+    console.log('✅ Sample member created:', memberEmail)
 
     // 4. Create Sample News
-    await prisma.news.deleteMany(); // Clear old news
+    await prisma.news.deleteMany() // Clear old news
     await prisma.news.createMany({
       data: [
         {
@@ -85,12 +85,12 @@ async function main() {
           imageUrl: 'https://picsum.photos/seed/admin-welcome/600/400.jpg',
           authorId: author.id,
           published: true,
-        }
+        },
       ],
-    });
+    })
 
     // 5. Create Sample Archives
-    await prisma.archive.deleteMany();
+    await prisma.archive.deleteMany()
     await prisma.archive.create({
       data: {
         title: 'Charte des droits et devoirs 2019',
@@ -100,16 +100,16 @@ async function main() {
         documentType: 'Charte',
         imageUrl: 'https://picsum.photos/seed/archive4/600/400.jpg',
         authorId: author.id,
-      }
-    });
+      },
+    })
 
-    console.log('🚀 Seeding completed successfully!');
+    console.log('🚀 Seeding completed successfully!')
   } catch (error) {
-    console.error('❌ Seeding failed:', error);
-    process.exit(1);
+    console.error('❌ Seeding failed:', error)
+    process.exit(1)
   } finally {
-    await prisma.$disconnect();
+    await prisma.$disconnect()
   }
 }
 
-main();
+main()

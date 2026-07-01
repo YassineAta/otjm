@@ -111,7 +111,11 @@ export default function AdminLogin() {
                 </div>
               </div>
 
-              <Button type="submit" className="w-full bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]" disabled={loading}>
+              <Button
+                type="submit"
+                className="w-full bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]"
+                disabled={loading}
+              >
                 {loading ? (
                   <div className="flex items-center gap-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
@@ -129,7 +133,11 @@ export default function AdminLogin() {
         </Card>
 
         <div className="text-center mt-6">
-          <Button variant="outline" onClick={() => window.location.href = '/'} className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5">
+          <Button
+            variant="outline"
+            onClick={() => (window.location.href = '/')}
+            className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5"
+          >
             Retour au site
           </Button>
         </div>

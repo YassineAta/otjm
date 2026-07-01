@@ -21,12 +21,18 @@ const mockedFind = vi.mocked(db.membership.findUnique)
 const mockedUpdate = vi.mocked(db.membership.update)
 
 const pendingMembership = {
-  id: 'm1', price: 20, paymentStatus: 'pending', status: 'pending',
+  id: 'm1',
+  price: 20,
+  paymentStatus: 'pending',
+  status: 'pending',
 }
 
 function flouciSays(status: string, amountMillimes: number, success = true) {
   mockedVerify.mockResolvedValue({
-    success, status, amountMillimes, raw: {},
+    success,
+    status,
+    amountMillimes,
+    raw: {},
   } as never)
 }
 

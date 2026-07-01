@@ -4,10 +4,7 @@ import { deliverMemberCard } from '@/lib/card-delivery'
 
 // Admin action: (re)generate and (re)send a member's card by email.
 // force=true bypasses the cardSentAt guard — used for "renvoyer la carte".
-export async function POST(
-  _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin()
   if (auth.error) return auth.error
 
@@ -18,9 +15,12 @@ export async function POST(
     return NextResponse.json({ ok: true })
   }
   return NextResponse.json(
-    { error: result === 'failed'
-        ? "Échec de l'envoi — voir les événements de paiement."
-        : "Envoi impossible : membre non actif/payé, ou SMTP non configuré." },
+    {
+      error:
+        result === 'failed'
+          ? "Échec de l'envoi — voir les événements de paiement."
+          : 'Envoi impossible : membre non actif/payé, ou SMTP non configuré.',
+    },
     { status: result === 'failed' ? 502 : 409 },
   )
 }

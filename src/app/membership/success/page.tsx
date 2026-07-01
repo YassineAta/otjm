@@ -3,7 +3,11 @@ import { Check } from 'lucide-react'
 import { SiteHeader } from '@/components/otjm/SiteHeader'
 import { SiteFooter } from '@/components/otjm/SiteFooter'
 
-export const metadata = { title: 'Paiement confirmé — OTJM', robots: { index: false, follow: true }, alternates: { canonical: '/membership/success' } }
+export const metadata = {
+  title: 'Paiement confirmé — OTJM',
+  robots: { index: false, follow: true },
+  alternates: { canonical: '/membership/success' },
+}
 
 export default function MembershipSuccessPage() {
   return (
@@ -13,7 +17,10 @@ export default function MembershipSuccessPage() {
         <div className="w-16 h-16 rounded-full bg-[var(--otjm-red)] mx-auto mb-6 flex items-center justify-center">
           <Check className="w-8 h-8 text-white" />
         </div>
-        <h1 className="font-editorial text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--otjm-text)' }}>
+        <h1
+          className="font-editorial text-3xl md:text-4xl font-bold mb-3"
+          style={{ color: 'var(--otjm-text)' }}
+        >
           Paiement confirmé
         </h1>
         <p className="mb-8" style={{ color: 'var(--otjm-text-muted)' }}>

@@ -22,11 +22,11 @@ import { useMemo, useState } from 'react'
 export function useTableFilter<T>(
   items: T[],
   searchKeys: (keyof T)[],
-  filterDefs: Record<string, (item: T, value: string) => boolean> = {}
+  filterDefs: Record<string, (item: T, value: string) => boolean> = {},
 ) {
   const [search, setSearch] = useState('')
   const [filters, setFilters] = useState<Record<string, string>>(() =>
-    Object.fromEntries(Object.keys(filterDefs).map((name) => [name, 'all']))
+    Object.fromEntries(Object.keys(filterDefs).map((name) => [name, 'all'])),
   )
 
   const setFilter = (name: string, value: string) =>
@@ -41,7 +41,7 @@ export function useTableFilter<T>(
         searchKeys.some((key) => {
           const value = item[key]
           return typeof value === 'string' && value.toLowerCase().includes(query)
-        })
+        }),
       )
     }
 

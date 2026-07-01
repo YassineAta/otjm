@@ -7,7 +7,13 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Modal } from '@/components/ui/modal'
 import {
@@ -50,22 +56,19 @@ interface ArchiveItem {
 const categoryLabels = {
   protests: 'Protestations',
   statements: 'Déclarations',
-  documents: 'Documents'
+  documents: 'Documents',
 }
 
-const documentTypeOptions = [
-  'Rapport',
-  'Déclaration',
-  'Charte',
-  'Communiqué',
-  'Autre'
-]
+const documentTypeOptions = ['Rapport', 'Déclaration', 'Charte', 'Communiqué', 'Autre']
 
-const DEFAULT_IMAGE_URL = 'otjmlogo.jpg';
-
+const DEFAULT_IMAGE_URL = 'otjmlogo.jpg'
 
 export default function ArchiveManagement() {
-  const { items: archives, loading, refetch: fetchArchives } = useAdminList<ArchiveItem>('/api/archives', {
+  const {
+    items: archives,
+    loading,
+    refetch: fetchArchives,
+  } = useAdminList<ArchiveItem>('/api/archives', {
     errorMessage: 'Impossible de charger les archives.',
   })
 
@@ -88,7 +91,7 @@ export default function ArchiveManagement() {
     documentType: 'Rapport',
     imageUrl: '',
     linkUrl: '',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
   }
 
   const {
@@ -109,13 +112,13 @@ export default function ArchiveManagement() {
 
   const formatDate = (dateString: string) => {
     try {
-        return new Date(dateString).toLocaleDateString('fr-FR', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-        })
+      return new Date(dateString).toLocaleDateString('fr-FR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })
     } catch {
-        return 'Date Inconnue';
+      return 'Date Inconnue'
     }
   }
 
@@ -124,7 +127,7 @@ export default function ArchiveManagement() {
     e.preventDefault()
 
     // Logic to set default image URL
-    const finalImageUrl = formData.imageUrl.trim() || DEFAULT_IMAGE_URL;
+    const finalImageUrl = formData.imageUrl.trim() || DEFAULT_IMAGE_URL
 
     try {
       await adminFetch('/api/archives', {
@@ -135,11 +138,11 @@ export default function ArchiveManagement() {
           authorId: 'admin',
         },
       })
-      toastSuccess('L\'archive a été créée.')
+      toastSuccess("L'archive a été créée.")
       resetModalsAndForm()
       fetchArchives()
     } catch {
-      toastError('Impossible de créer l\'archive.')
+      toastError("Impossible de créer l'archive.")
     }
   }
 
@@ -154,7 +157,7 @@ export default function ArchiveManagement() {
       documentType: item.documentType,
       imageUrl: item.imageUrl || '',
       linkUrl: item.linkUrl || '',
-      date: new Date(item.date).toISOString().split('T')[0]
+      date: new Date(item.date).toISOString().split('T')[0],
     })
     setShowEditModal(true)
   }
@@ -175,11 +178,11 @@ export default function ArchiveManagement() {
         method: 'PATCH',
         body: formData,
       })
-      toastSuccess('L\'archive a été mise à jour.')
+      toastSuccess("L'archive a été mise à jour.")
       resetModalsAndForm()
       fetchArchives()
     } catch {
-      toastError('Impossible de mettre à jour l\'archive.')
+      toastError("Impossible de mettre à jour l'archive.")
     }
   }
 
@@ -191,13 +194,12 @@ export default function ArchiveManagement() {
 
     try {
       await adminFetch(`/api/archives/${id}`, { method: 'DELETE' })
-      toastSuccess('L\'archive a été supprimée.')
+      toastSuccess("L'archive a été supprimée.")
       fetchArchives()
     } catch {
-      toastError('Impossible de supprimer l\'archive.')
+      toastError("Impossible de supprimer l'archive.")
     }
   }
-
 
   if (loading) {
     return (
@@ -276,9 +278,7 @@ export default function ArchiveManagement() {
               <FileText className="w-5 h-5" />
               Liste des Archives ({filteredArchives.length})
             </CardTitle>
-            <CardDescription>
-              Gérez tous les documents d'archives de l'OTJM
-            </CardDescription>
+            <CardDescription>Gérez tous les documents d'archives de l'OTJM</CardDescription>
           </CardHeader>
           <CardContent>
             {filteredArchives.length === 0 ? (
@@ -297,7 +297,10 @@ export default function ArchiveManagement() {
                           <Badge variant="outline">
                             {categoryLabels[item.category as keyof typeof categoryLabels]}
                           </Badge>
-                          <Badge variant="default" className='bg-blue-100 text-blue-800 hover:bg-blue-100'>
+                          <Badge
+                            variant="default"
+                            className="bg-blue-100 text-blue-800 hover:bg-blue-100"
+                          >
                             {item.documentType}
                           </Badge>
                         </div>
@@ -313,8 +316,8 @@ export default function ArchiveManagement() {
                           </div>
                           {item.linkUrl && (
                             <div className="flex items-center gap-1 text-[var(--otjm-red)]">
-                                <Link className="w-4 h-4" />
-                                <span>Lien</span>
+                              <Link className="w-4 h-4" />
+                              <span>Lien</span>
                             </div>
                           )}
                         </div>
@@ -348,7 +351,7 @@ export default function ArchiveManagement() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {showEditModal ? 'Modifier l\'archive' : 'Ajouter une archive'}
+              {showEditModal ? "Modifier l'archive" : 'Ajouter une archive'}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={showEditModal ? handleUpdate : handleSubmit} className="space-y-4">
@@ -357,47 +360,55 @@ export default function ArchiveManagement() {
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
               />
             </div>
 
-            <div className='grid grid-cols-2 gap-4'>
-                <div>
-                    <Label htmlFor="category">Catégorie</Label>
-                    <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="protests">Protestations</SelectItem>
-                            <SelectItem value="statements">Déclarations</SelectItem>
-                            <SelectItem value="documents">Documents</SelectItem>
-                        </SelectContent>
-                    </Select>
-                </div>
-                <div>
-                    <Label htmlFor="documentType">Type de Document</Label>
-                    <Select value={formData.documentType} onValueChange={(value) => setFormData({...formData, documentType: value})}>
-                        <SelectTrigger>
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {documentTypeOptions.map(type => (
-                                <SelectItem key={type} value={type}>{type}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="category">Catégorie</Label>
+                <Select
+                  value={formData.category}
+                  onValueChange={(value) => setFormData({ ...formData, category: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="protests">Protestations</SelectItem>
+                    <SelectItem value="statements">Déclarations</SelectItem>
+                    <SelectItem value="documents">Documents</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label htmlFor="documentType">Type de Document</Label>
+                <Select
+                  value={formData.documentType}
+                  onValueChange={(value) => setFormData({ ...formData, documentType: value })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {documentTypeOptions.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {type}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <div>
               <Label htmlFor="date">Date de l'Archive</Label>
               <Input
                 id="date"
-                type='date'
+                type="date"
                 value={formData.date}
-                onChange={(e) => setFormData({...formData, date: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                 required
               />
             </div>
@@ -407,7 +418,7 @@ export default function ArchiveManagement() {
               <Textarea
                 id="excerpt"
                 value={formData.excerpt}
-                onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                 rows={3}
                 required
               />
@@ -418,42 +429,38 @@ export default function ArchiveManagement() {
               <Textarea
                 id="content"
                 value={formData.content}
-                onChange={(e) => setFormData({...formData, content: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 rows={6}
                 required
               />
             </div>
 
-            <div className='grid grid-cols-2 gap-4'>
-                <div>
-                    <Label htmlFor="imageUrl">URL de l'image</Label>
-                    <Input
-                        id="imageUrl"
-                        value={formData.imageUrl}
-                        onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                        placeholder="https://..."
-                    />
-                </div>
-                <div>
-                    <Label htmlFor="linkUrl">URL du lien externe</Label>
-                    <Input
-                        id="linkUrl"
-                        value={formData.linkUrl}
-                        onChange={(e) => setFormData({...formData, linkUrl: e.target.value})}
-                        placeholder="https://..."
-                    />
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="imageUrl">URL de l'image</Label>
+                <Input
+                  id="imageUrl"
+                  value={formData.imageUrl}
+                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                  placeholder="https://..."
+                />
+              </div>
+              <div>
+                <Label htmlFor="linkUrl">URL du lien externe</Label>
+                <Input
+                  id="linkUrl"
+                  value={formData.linkUrl}
+                  onChange={(e) => setFormData({ ...formData, linkUrl: e.target.value })}
+                  placeholder="https://..."
+                />
+              </div>
             </div>
 
             <div className="flex gap-2 pt-4">
               <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
-                {showEditModal ? 'Mettre à jour l\'archive' : 'Créer l\'archive'}
+                {showEditModal ? "Mettre à jour l'archive" : "Créer l'archive"}
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={resetModalsAndForm}
-              >
+              <Button type="button" variant="outline" onClick={resetModalsAndForm}>
                 Annuler
               </Button>
             </div>
@@ -465,16 +472,17 @@ export default function ArchiveManagement() {
       <Modal
         isOpen={showViewModal}
         onClose={resetModalsAndForm}
-        title={selectedArchive?.title || 'Détails de l\'Archive'}
+        title={selectedArchive?.title || "Détails de l'Archive"}
       >
         {selectedArchive && (
           <div className="space-y-4">
-
             {/* Metadata Line (Badges, Author, Date, Link) */}
             <div className="flex items-center gap-4 text-sm text-gray-500 border-b pb-3">
-
               {/* Category Badge (Déclarations) */}
-              <Badge variant="default" className="bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)] hover:bg-[var(--otjm-red)]/10">
+              <Badge
+                variant="default"
+                className="bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)] hover:bg-[var(--otjm-red)]/10"
+              >
                 {categoryLabels[selectedArchive.category as keyof typeof categoryLabels]}
               </Badge>
 
@@ -511,15 +519,14 @@ export default function ArchiveManagement() {
 
             {/* Content Area (Mapping the content to the area below the metadata) */}
             <div className="prose max-w-none">
-
               {/* Image Section */}
               {selectedArchive.imageUrl && (
                 <div className="w-full bg-gray-100 flex items-center justify-center rounded-lg border overflow-hidden mb-4">
-                    <img
-                        src={selectedArchive.imageUrl}
-                        alt={selectedArchive.title}
-                        className="max-w-full h-auto max-h-80 object-contain"
-                    />
+                  <img
+                    src={selectedArchive.imageUrl}
+                    alt={selectedArchive.title}
+                    className="max-w-full h-auto max-h-80 object-contain"
+                  />
                 </div>
               )}
 
@@ -528,18 +535,17 @@ export default function ArchiveManagement() {
                 {selectedArchive.content}
               </p>
 
-              <div className='mt-4 pt-4 border-t border-gray-200'>
-                 <p className='text-sm font-semibold text-gray-700'>Extrait:</p>
-                 <p className='text-gray-600 italic'>{selectedArchive.excerpt}</p>
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <p className="text-sm font-semibold text-gray-700">Extrait:</p>
+                <p className="text-gray-600 italic">{selectedArchive.excerpt}</p>
 
-                 {selectedArchive.author?.email && (
-                     <p className='text-xs text-gray-500 mt-2'>
-                        Email de l'auteur: {selectedArchive.author.email}
-                     </p>
-                 )}
+                {selectedArchive.author?.email && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    Email de l'auteur: {selectedArchive.author.email}
+                  </p>
+                )}
               </div>
             </div>
-
           </div>
         )}
       </Modal>

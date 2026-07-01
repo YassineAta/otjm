@@ -6,22 +6,34 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Modal } from '@/components/ui/modal'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  Users, 
-  Search, 
-  Filter, 
-  Eye, 
-  Edit, 
-  Trash2, 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import {
+  Users,
+  Search,
+  Filter,
+  Eye,
+  Edit,
+  Trash2,
   ArrowLeft,
   Plus,
   Shield,
   UserPlus,
   Lock,
-  Unlock
+  Unlock,
 } from 'lucide-react'
 import { useAdminList } from '@/hooks/use-admin-list'
 import { useModalForm } from '@/hooks/use-modal-form'
@@ -41,11 +53,15 @@ const initialFormData = {
   email: '',
   name: '',
   role: 'member',
-  password: ''
+  password: '',
 }
 
 export default function AdminUserManagement() {
-  const { items: users, loading, refetch: fetchUsers } = useAdminList<AdminUser>('/api/admin/users', {
+  const {
+    items: users,
+    loading,
+    refetch: fetchUsers,
+  } = useAdminList<AdminUser>('/api/admin/users', {
     errorMessage: 'Impossible de charger les utilisateurs.',
   })
 
@@ -83,11 +99,11 @@ export default function AdminUserManagement() {
         method: 'POST',
         body: formData,
       })
-      toastSuccess('L\'utilisateur a été créé.')
+      toastSuccess("L'utilisateur a été créé.")
       resetModalsAndForm()
       fetchUsers()
     } catch {
-      toastError('Impossible de créer l\'utilisateur.')
+      toastError("Impossible de créer l'utilisateur.")
     }
   }
 
@@ -97,7 +113,7 @@ export default function AdminUserManagement() {
       email: user.email,
       name: user.name || '',
       role: user.role,
-      password: ''
+      password: '',
     })
     setShowEditModal(true)
   }
@@ -117,11 +133,11 @@ export default function AdminUserManagement() {
         method: 'PATCH',
         body: { name: formData.name, role: formData.role },
       })
-      toastSuccess('L\'utilisateur a été mis à jour.')
+      toastSuccess("L'utilisateur a été mis à jour.")
       resetModalsAndForm()
       fetchUsers()
     } catch {
-      toastError('Impossible de mettre à jour l\'utilisateur.')
+      toastError("Impossible de mettre à jour l'utilisateur.")
     }
   }
 
@@ -132,10 +148,10 @@ export default function AdminUserManagement() {
 
     try {
       await adminFetch(`/api/admin/users/${userId}`, { method: 'DELETE' })
-      toastSuccess('L\'utilisateur a été supprimé.')
+      toastSuccess("L'utilisateur a été supprimé.")
       fetchUsers()
     } catch {
-      toastError('Impossible de supprimer l\'utilisateur.')
+      toastError("Impossible de supprimer l'utilisateur.")
     }
   }
 
@@ -150,17 +166,23 @@ export default function AdminUserManagement() {
 
   const getRoleColor = (role: string) => {
     switch (role) {
-      case 'admin': return 'bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)]'
-      case 'member': return 'bg-blue-100 text-blue-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'admin':
+        return 'bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)]'
+      case 'member':
+        return 'bg-blue-100 text-blue-800'
+      default:
+        return 'bg-gray-100 text-gray-800'
     }
   }
 
   const getRoleText = (role: string) => {
     switch (role) {
-      case 'admin': return 'Administrateur'
-      case 'member': return 'Membre'
-      default: return role
+      case 'admin':
+        return 'Administrateur'
+      case 'member':
+        return 'Membre'
+      default:
+        return role
     }
   }
 
@@ -182,7 +204,7 @@ export default function AdminUserManagement() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <Button 
+              <Button
                 onClick={() => router.push('/admin/dashboard')}
                 variant="outline"
                 className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5"
@@ -192,7 +214,7 @@ export default function AdminUserManagement() {
               </Button>
               <h1 className="text-xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
             </div>
-            <Button 
+            <Button
               onClick={() => setShowAddModal(true)}
               className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]"
             >
@@ -240,9 +262,7 @@ export default function AdminUserManagement() {
               <Users className="w-5 h-5" />
               Liste des Utilisateurs ({filteredUsers.length})
             </CardTitle>
-            <CardDescription>
-              Gérez tous les utilisateurs de l'administration
-            </CardDescription>
+            <CardDescription>Gérez tous les utilisateurs de l'administration</CardDescription>
           </CardHeader>
           <CardContent>
             {filteredUsers.length === 0 ? (
@@ -288,13 +308,17 @@ export default function AdminUserManagement() {
                         <td className="p-3">
                           <div className="text-sm">
                             <p>{new Date(user.createdAt).toLocaleDateString('fr-FR')}</p>
-                            <p className="text-gray-500">{new Date(user.createdAt).toLocaleTimeString('fr-FR')}</p>
+                            <p className="text-gray-500">
+                              {new Date(user.createdAt).toLocaleTimeString('fr-FR')}
+                            </p>
                           </div>
                         </td>
                         <td className="p-3">
                           <div className="text-sm">
                             <p>{new Date(user.updatedAt).toLocaleDateString('fr-FR')}</p>
-                            <p className="text-gray-500">{new Date(user.updatedAt).toLocaleTimeString('fr-FR')}</p>
+                            <p className="text-gray-500">
+                              {new Date(user.updatedAt).toLocaleTimeString('fr-FR')}
+                            </p>
                           </div>
                         </td>
                         <td className="p-3">
@@ -305,11 +329,15 @@ export default function AdminUserManagement() {
                             <Button size="sm" variant="outline" onClick={() => handleEdit(user)}>
                               <Edit className="w-4 h-4" />
                             </Button>
-                            <Button size="sm" variant="outline" onClick={() => handleResetPassword(user.id)}>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleResetPassword(user.id)}
+                            >
                               <Lock className="w-4 h-4" />
                             </Button>
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               variant="destructive"
                               onClick={() => handleDelete(user.id)}
                             >
@@ -328,23 +356,26 @@ export default function AdminUserManagement() {
       </main>
 
       {/* Add/Edit Modal */}
-      <Dialog open={showAddModal || showEditModal} onOpenChange={(open) => {
-        if (!open) {
-          setShowAddModal(false)
-          setShowEditModal(false)
-          setSelectedUser(null)
-          setFormData({
-            email: '',
-            name: '',
-            role: 'member',
-            password: ''
-          })
-        }
-      }}>
+      <Dialog
+        open={showAddModal || showEditModal}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowAddModal(false)
+            setShowEditModal(false)
+            setSelectedUser(null)
+            setFormData({
+              email: '',
+              name: '',
+              role: 'member',
+              password: '',
+            })
+          }
+        }}
+      >
         <DialogContent className="max-w-2xl">
           <DialogHeader>
             <DialogTitle>
-              {showEditModal ? 'Modifier l\'utilisateur' : 'Ajouter un utilisateur'}
+              {showEditModal ? "Modifier l'utilisateur" : 'Ajouter un utilisateur'}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={showEditModal ? handleUpdate : handleSubmit} className="space-y-4">
@@ -354,25 +385,28 @@ export default function AdminUserManagement() {
                 id="email"
                 type="email"
                 value={formData.email}
-                onChange={(e) => setFormData({...formData, email: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 required
                 disabled={showEditModal} // Email cannot be edited
               />
             </div>
-            
+
             <div>
               <Label htmlFor="name">Nom complet</Label>
               <Input
                 id="name"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 required
               />
             </div>
-            
+
             <div>
               <Label htmlFor="role">Rôle</Label>
-              <Select value={formData.role} onValueChange={(value) => setFormData({...formData, role: value})}>
+              <Select
+                value={formData.role}
+                onValueChange={(value) => setFormData({ ...formData, role: value })}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -382,7 +416,7 @@ export default function AdminUserManagement() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             {!showEditModal && (
               <div>
                 <Label htmlFor="password">Mot de passe</Label>
@@ -390,19 +424,19 @@ export default function AdminUserManagement() {
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   placeholder="Laisser vide pour ne pas modifier"
                 />
               </div>
             )}
-            
+
             <div className="flex gap-2 pt-4">
               <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 {showEditModal ? 'Mettre à jour' : 'Créer'}
               </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
+              <Button
+                type="button"
+                variant="outline"
                 onClick={() => {
                   setShowAddModal(false)
                   setShowEditModal(false)
@@ -411,7 +445,7 @@ export default function AdminUserManagement() {
                     email: '',
                     name: '',
                     role: 'member',
-                    password: ''
+                    password: '',
                   })
                 }}
               >
@@ -443,7 +477,7 @@ export default function AdminUserManagement() {
                 <p className="text-gray-500">{selectedUser.email}</p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between py-3 border-b">
                 <span className="text-gray-600">Rôle</span>
@@ -451,17 +485,17 @@ export default function AdminUserManagement() {
                   {getRoleText(selectedUser.role)}
                 </Badge>
               </div>
-              
+
               <div className="flex items-center justify-between py-3 border-b">
                 <span className="text-gray-600">Email</span>
                 <span className="font-medium">{selectedUser.email}</span>
               </div>
-              
+
               <div className="flex items-center justify-between py-3 border-b">
                 <span className="text-gray-600">Nom complet</span>
                 <span className="font-medium">{selectedUser.name || 'N/A'}</span>
               </div>
-              
+
               <div className="flex items-center justify-between py-3 border-b">
                 <span className="text-gray-600">Date de création</span>
                 <span className="font-medium">
@@ -470,11 +504,11 @@ export default function AdminUserManagement() {
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                   })}
                 </span>
               </div>
-              
+
               <div className="flex items-center justify-between py-3">
                 <span className="text-gray-600">Dernière mise à jour</span>
                 <span className="font-medium">
@@ -483,7 +517,7 @@ export default function AdminUserManagement() {
                     month: 'long',
                     day: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit'
+                    minute: '2-digit',
                   })}
                 </span>
               </div>

@@ -12,10 +12,12 @@ if (typeof setInterval !== 'undefined') {
 
 export function checkRateLimit(
   req: NextRequest,
-  { limit = 10, windowSeconds = 60 } = {}
+  { limit = 10, windowSeconds = 60 } = {},
 ): NextResponse | null {
-  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || req.headers.get('x-real-ip') || 'unknown'
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip') ||
+    'unknown'
   const key = `${ip}:${req.nextUrl.pathname}`
   const now = Date.now()
   const entry = hits.get(key)
@@ -28,7 +30,7 @@ export function checkRateLimit(
   if (++entry.count > limit) {
     return NextResponse.json(
       { error: 'Trop de requêtes. Veuillez réessayer plus tard.' },
-      { status: 429, headers: { 'Retry-After': String(Math.ceil((entry.resetAt - now) / 1000)) } }
+      { status: 429, headers: { 'Retry-After': String(Math.ceil((entry.resetAt - now) / 1000)) } },
     )
   }
   return null

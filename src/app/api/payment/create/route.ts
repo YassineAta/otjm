@@ -15,7 +15,9 @@ export async function POST(req: NextRequest) {
   if (limited) return limited
 
   let raw: unknown
-  try { raw = await req.json() } catch {
+  try {
+    raw = await req.json()
+  } catch {
     return NextResponse.json({ message: 'Invalid JSON body.' }, { status: 400 })
   }
 
@@ -40,14 +42,21 @@ export async function POST(req: NextRequest) {
   }
 
   const now = new Date()
-  const oneYear = new Date(now); oneYear.setFullYear(now.getFullYear() + 1)
+  const oneYear = new Date(now)
+  oneYear.setFullYear(now.getFullYear() + 1)
 
   const fields = {
-    name: data.fullName, tier: data.tier, price: pricing.priceTnd,
-    memberStatus: data.memberStatus, faculty: data.faculty ?? null,
-    cin: encryptField(data.cin), phone: encryptField(data.phone),
+    name: data.fullName,
+    tier: data.tier,
+    price: pricing.priceTnd,
+    memberStatus: data.memberStatus,
+    faculty: data.faculty ?? null,
+    cin: encryptField(data.cin),
+    phone: encryptField(data.phone),
     dateOfBirth: data.dateOfBirth ?? null,
-    paymentMethod: 'Flouci', paymentStatus: 'pending', status: 'pending',
+    paymentMethod: 'Flouci',
+    paymentStatus: 'pending',
+    status: 'pending',
   }
 
   const membership = existing
@@ -73,13 +82,20 @@ export async function POST(req: NextRequest) {
       where: { id: membership.id },
       data: { flouciPaymentId: paymentId },
     })
-    await db.paymentEvent.create({
-      data: {
-        membershipId: membership.id, flouciPaymentId: paymentId,
-        type: 'created', toStatus: 'pending',
-        amountMillimes: Math.round(pricing.priceTnd * 1000), source: 'create',
-      },
-    }).catch(() => { /* trail must not block checkout */ })
+    await db.paymentEvent
+      .create({
+        data: {
+          membershipId: membership.id,
+          flouciPaymentId: paymentId,
+          type: 'created',
+          toStatus: 'pending',
+          amountMillimes: Math.round(pricing.priceTnd * 1000),
+          source: 'create',
+        },
+      })
+      .catch(() => {
+        /* trail must not block checkout */
+      })
 
     return NextResponse.json({ link, paymentId }, { status: 200 })
   } catch (err) {

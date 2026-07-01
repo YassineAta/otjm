@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (existing > 0) {
       return NextResponse.json(
         { error: 'Setup already completed. An admin account exists.' },
-        { status: 403 }
+        { status: 403 },
       )
     }
 
@@ -35,24 +35,21 @@ export async function POST(req: NextRequest) {
     if (password.length < 12) {
       return NextResponse.json(
         { error: 'Le mot de passe doit contenir au moins 12 caractères.' },
-        { status: 400 }
+        { status: 400 },
       )
     }
 
     const hashedPassword = await bcrypt.hash(password, 12)
 
     const admin = await db.admin.create({
-      data: { email, hashedPassword, name, role: 'superadmin' }
+      data: { email, hashedPassword, name, role: 'superadmin' },
     })
 
-    return NextResponse.json(
-      { success: true, email: admin.email },
-      { status: 201 }
-    )
+    return NextResponse.json({ success: true, email: admin.email }, { status: 201 })
   } catch {
     return NextResponse.json(
       { error: 'Échec de la création du compte administrateur.' },
-      { status: 500 }
+      { status: 500 },
     )
   }
 }
