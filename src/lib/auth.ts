@@ -34,6 +34,18 @@ export async function requireAdmin(): Promise<AuthOk | AuthErr> {
   }
 }
 
+/** Comme requireAdmin, mais réservé au rôle superadmin (gestion des comptes). */
+export async function requireSuperAdmin(): Promise<AuthOk | AuthErr> {
+  const auth = await requireAdmin()
+  if (auth.error) return auth
+  if (auth.session.user.role !== 'superadmin') {
+    return {
+      error: NextResponse.json({ error: 'Réservé au superadmin.' }, { status: 403 }),
+    }
+  }
+  return auth
+}
+
 export const isValidEmail = (v: string) =>
   typeof v === 'string' && v.length <= MAX_EMAIL && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
 

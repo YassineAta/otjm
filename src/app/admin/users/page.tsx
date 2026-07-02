@@ -213,6 +213,14 @@ export default function AdminUserManagement() {
                 Retour
               </Button>
               <h1 className="text-xl font-bold text-gray-900">Gestion des Utilisateurs</h1>
+              <Button
+                onClick={() => router.push('/admin/admins')}
+                variant="outline"
+                className="text-[var(--otjm-red)] border-[var(--otjm-red)]/20 hover:bg-[var(--otjm-red)]/5"
+              >
+                <Shield className="w-4 h-4 mr-2" />
+                Comptes administrateurs
+              </Button>
             </div>
             <Button
               onClick={() => setShowAddModal(true)}

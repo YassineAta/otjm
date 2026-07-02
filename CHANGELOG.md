@@ -11,6 +11,21 @@ Chantier de durcissement, performance, sécurité et documentation. Aucune
 modification de la base de données de production tant que le snapshot Atlas
 n'a pas été fourni (phases 4 et 5 gelées).
 
+### Phase 2 bis — Comptes administrateurs (provisionnement temporaire)
+
+#### Ajouté
+
+- **Page « Comptes administrateurs »** (`/admin/admins`, réservée au
+  superadmin) : création de comptes admin avec mot de passe fort généré
+  côté serveur, affiché une seule fois (transmission par canal privé), et
+  révocation des comptes. Débloque le téléversement d'archives par
+  plusieurs membres du bureau (ADR-010 — remplacé à terme par
+  l'invitation par email de la phase d'authentification, sans migration
+  de données).
+- `requireSuperAdmin()` dans `src/lib/auth.ts` ; gardes de suppression
+  (ni soi-même, ni un superadmin) testées dans
+  `src/lib/__tests__/admin-accounts.test.ts`.
+
 ### Phase 2 — Téléversement de fichiers (archives)
 
 #### Ajouté
