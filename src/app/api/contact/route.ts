@@ -21,7 +21,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 })
     }
 
-    const contact = await db.contact.create({ data: { name, email, subject, message, status: 'unread' } })
+    const contact = await db.contact.create({
+      data: { name, email, subject, message, status: 'unread' },
+    })
     return NextResponse.json({ id: contact.id }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Failed to submit' }, { status: 500 })

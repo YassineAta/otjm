@@ -7,7 +7,9 @@ vi.mock('@/lib/db', () => ({
   },
 }))
 vi.mock('@/lib/card', () => ({
-  generateMemberCard: vi.fn().mockResolvedValue({ backPng: Buffer.from('png'), pdf: Buffer.from('pdf') }),
+  generateMemberCard: vi
+    .fn()
+    .mockResolvedValue({ backPng: Buffer.from('png'), pdf: Buffer.from('pdf') }),
   formatCardNumber: (n: number) => String(n).padStart(4, '0'),
 }))
 vi.mock('@/lib/mail', () => ({
@@ -24,9 +26,14 @@ const mockedFindFirst = vi.mocked(db.membership.findFirst)
 const mockedSend = vi.mocked(sendMemberCardEmail)
 
 const paidMember = {
-  id: 'm1', name: 'Dr Test', email: 't@example.com',
-  paymentStatus: 'paid', status: 'active',
-  cardNumber: null, cardSentAt: null, endDate: new Date('2027-06-12'),
+  id: 'm1',
+  name: 'Dr Test',
+  email: 't@example.com',
+  paymentStatus: 'paid',
+  status: 'active',
+  cardNumber: null,
+  cardSentAt: null,
+  endDate: new Date('2027-06-12'),
 } as never
 
 beforeEach(() => {
@@ -42,7 +49,10 @@ describe('deliverMemberCard', () => {
     const r = await deliverMemberCard('m1', 'webhook')
 
     expect(r).toBe('sent')
-    expect(db.membership.update).toHaveBeenCalledWith({ where: { id: 'm1' }, data: { cardNumber: 162 } })
+    expect(db.membership.update).toHaveBeenCalledWith({
+      where: { id: 'm1' },
+      data: { cardNumber: 162 },
+    })
     expect(mockedSend).toHaveBeenCalledOnce()
     expect(mockedSend.mock.calls[0][0].cardNumberLabel).toBe('0162')
   })
@@ -55,14 +65,22 @@ describe('deliverMemberCard', () => {
   })
 
   it('force=true resends despite cardSentAt (admin resend)', async () => {
-    mockedFind.mockResolvedValue({ ...(paidMember as object), cardSentAt: new Date(), cardNumber: 9 } as never)
+    mockedFind.mockResolvedValue({
+      ...(paidMember as object),
+      cardSentAt: new Date(),
+      cardNumber: 9,
+    } as never)
 
     expect(await deliverMemberCard('m1', 'admin', { force: true })).toBe('sent')
     expect(mockedSend.mock.calls[0][0].cardNumberLabel).toBe('0009')
   })
 
   it('refuses unpaid/inactive members', async () => {
-    mockedFind.mockResolvedValue({ ...(paidMember as object), paymentStatus: 'pending', status: 'pending' } as never)
+    mockedFind.mockResolvedValue({
+      ...(paidMember as object),
+      paymentStatus: 'pending',
+      status: 'pending',
+    } as never)
 
     expect(await deliverMemberCard('m1', 'webhook')).toBe('skipped')
     expect(mockedSend).not.toHaveBeenCalled()

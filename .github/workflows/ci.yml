@@ -1,0 +1,51 @@
+# Intégration continue OTJM
+# Gate de qualité exécuté à chaque push et pull request : typage, lint, tests
+# et scan de dépendances. Le typecheck (tsc) et les tests sont bloquants ; le
+# scan de vulnérabilités bloque sur les niveaux « critical » (les « high »
+# restants dépendent de bumps cassants traités dans des PR dédiées et sont
+# donc reportés en information, non bloquants).
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Installation des dépendances
+        run: npm ci
+
+      - name: Génération du client Prisma
+        run: npx prisma generate
+
+      - name: Vérification du formatage (Prettier)
+        run: npm run format:check
+
+      - name: Lint (Next.js / ESLint)
+        run: npm run lint
+
+      - name: Typage strict (TypeScript)
+        run: npx tsc --noEmit
+
+      - name: Tests unitaires (Vitest)
+        run: npm run test
+
+      - name: Scan de vulnérabilités — bloquant (critical)
+        run: npm audit --audit-level=critical
+
+      - name: Scan de vulnérabilités — information (high)
+        run: npm audit --audit-level=high
+        continue-on-error: true

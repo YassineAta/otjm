@@ -37,7 +37,9 @@ export async function GET(req: NextRequest) {
     case 'verify_error':
       return NextResponse.redirect(`${base}/membership/failed?reason=verify_error`, { status: 303 })
     case 'unknown_payment':
-      return NextResponse.redirect(`${base}/membership/failed?reason=unknown_payment`, { status: 303 })
+      return NextResponse.redirect(`${base}/membership/failed?reason=unknown_payment`, {
+        status: 303,
+      })
     default:
       return NextResponse.redirect(`${base}/membership/failed`, { status: 303 })
   }

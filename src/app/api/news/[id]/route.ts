@@ -35,24 +35,21 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     }
 
     // Remove undefined values to avoid errors during update
-    Object.keys(data).forEach(key => data[key] === undefined && delete data[key]);
+    Object.keys(data).forEach((key) => data[key] === undefined && delete data[key])
 
     const updatedNews = await db.news.update({
       where: { id: id },
       data: data,
       include: {
         author: {
-          select: { name: true, id: true, email: true }
-        }
-      }
+          select: { name: true, id: true, email: true },
+        },
+      },
     })
 
     return NextResponse.json(updatedNews)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to update news' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update news' }, { status: 500 })
   }
 }
 
@@ -74,9 +71,6 @@ export async function DELETE(request: NextRequest, { params }: Params) {
     // Return a 204 No Content status for successful deletion
     return new NextResponse(null, { status: 204 })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to delete news' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete news' }, { status: 500 })
   }
 }

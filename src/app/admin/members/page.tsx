@@ -9,7 +9,13 @@ import { Badge } from '@/components/ui/badge'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Modal } from '@/components/ui/modal'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import {
   Users,
@@ -21,10 +27,15 @@ import {
   UserCheck,
   Plus,
   Upload,
-  Mail
+  Mail,
 } from 'lucide-react'
 import { toast } from '@/hooks/use-toast'
-import { MEMBER_STATUSES, tierForMemberStatus, priceForMemberStatus, tierLabel } from '@/lib/constants'
+import {
+  MEMBER_STATUSES,
+  tierForMemberStatus,
+  priceForMemberStatus,
+  tierLabel,
+} from '@/lib/constants'
 
 interface Member {
   id: string
@@ -47,40 +58,48 @@ interface Member {
   memberStatus?: string
 }
 
-const ALL_MEMBER_STATUSES = [...MEMBER_STATUSES];
+const ALL_MEMBER_STATUSES = [...MEMBER_STATUSES]
 
 const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active': return 'bg-green-100 text-green-800'
-      case 'pending': return 'bg-yellow-100 text-yellow-800'
-      case 'expired': return 'bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)]'
-      default: return 'bg-gray-100 text-gray-800'
-    }
+  switch (status) {
+    case 'active':
+      return 'bg-green-100 text-green-800'
+    case 'pending':
+      return 'bg-yellow-100 text-yellow-800'
+    case 'expired':
+      return 'bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)]'
+    default:
+      return 'bg-gray-100 text-gray-800'
+  }
 }
 
 const getStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return 'Actif'
-      case 'pending': return 'En attente'
-      case 'expired': return 'Expiré'
-      default: return status
-    }
+  switch (status) {
+    case 'active':
+      return 'Actif'
+    case 'pending':
+      return 'En attente'
+    case 'expired':
+      return 'Expiré'
+    default:
+      return status
+  }
 }
 
 const getTierText = tierLabel
 
 const initialAddFormData = {
-    fullName: '',
-    cin: '',
-    dateOfBirth: '',
-    email: '',
-    phone: '',
-    faculty: 'FMT',
-    memberStatus: 'Externe',
-    tier: tierForMemberStatus('Externe'),
-    paymentStatus: 'pending',
-    price: priceForMemberStatus('Externe'),
-};
+  fullName: '',
+  cin: '',
+  dateOfBirth: '',
+  email: '',
+  phone: '',
+  faculty: 'FMT',
+  memberStatus: 'Externe',
+  tier: tierForMemberStatus('Externe'),
+  paymentStatus: 'pending',
+  price: priceForMemberStatus('Externe'),
+}
 
 export default function MemberManagement() {
   const [members, setMembers] = useState<Member[]>([])
@@ -104,54 +123,59 @@ export default function MemberManagement() {
   const [addFormData, setAddFormData] = useState(initialAddFormData)
   const router = useRouter()
 
-  const handleMemberStatusChange = (newStatus: string, updateState: React.Dispatch<React.SetStateAction<any>> = setAddFormData) => {
+  const handleMemberStatusChange = (
+    newStatus: string,
+    updateState: React.Dispatch<React.SetStateAction<any>> = setAddFormData,
+  ) => {
     updateState((prev: typeof initialAddFormData) => ({
-        ...prev,
-        memberStatus: newStatus,
-        price: priceForMemberStatus(newStatus),
-        tier: tierForMemberStatus(newStatus),
-    }));
-  };
+      ...prev,
+      memberStatus: newStatus,
+      price: priceForMemberStatus(newStatus),
+      tier: tierForMemberStatus(newStatus),
+    }))
+  }
 
   const handleBulkUpload = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const file = formData.get('bulkFile') as File;
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const file = formData.get('bulkFile') as File
 
     if (!file || file.size === 0) {
-        toast({ title: 'Erreur', description: 'Veuillez sélectionner un fichier XLS ou CSV.', variant: 'destructive' });
-        return;
+      toast({
+        title: 'Erreur',
+        description: 'Veuillez sélectionner un fichier XLS ou CSV.',
+        variant: 'destructive',
+      })
+      return
     }
 
     try {
-        const response = await fetch('/api/membership/bulk-import', {
-            method: 'POST',
-            body: formData,
-        });
+      const response = await fetch('/api/membership/bulk-import', {
+        method: 'POST',
+        body: formData,
+      })
 
-        if (response.ok) {
-            const result = await response.json();
+      if (response.ok) {
+        const result = await response.json()
 
-            toast({
-                title: 'Importation réussie',
-                description: `${result.count} membres ajoutés avec succès.`,
-            });
-            setShowBulkUploadModal(false);
-            fetchMembers();
-        } else {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Échec de l\'importation côté serveur.');
-        }
-
-    } catch (error) {
         toast({
-            title: 'Erreur d\'importation',
-            description: `Impossible de traiter le fichier. Détails: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
-            variant: 'destructive',
-        });
+          title: 'Importation réussie',
+          description: `${result.count} membres ajoutés avec succès.`,
+        })
+        setShowBulkUploadModal(false)
+        fetchMembers()
+      } else {
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Échec de l'importation côté serveur.")
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur d'importation",
+        description: `Impossible de traiter le fichier. Détails: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
+        variant: 'destructive',
+      })
     }
-  };
-
+  }
 
   useEffect(() => {
     fetchMembers()
@@ -184,67 +208,84 @@ export default function MemberManagement() {
     let filtered = members
 
     if (searchTerm) {
-      filtered = filtered.filter(member =>
-        member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        member.email?.toLowerCase().includes(searchTerm.toLowerCase())
+      filtered = filtered.filter(
+        (member) =>
+          member.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          member.email?.toLowerCase().includes(searchTerm.toLowerCase()),
       )
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(member => member.status === statusFilter)
+      filtered = filtered.filter((member) => member.status === statusFilter)
     }
 
     if (tierFilter !== 'all') {
-      filtered = filtered.filter(member => member.tier === tierFilter)
+      filtered = filtered.filter((member) => member.tier === tierFilter)
     }
 
     setFilteredMembers(filtered)
   }
 
   const handleAddMember = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
     const memberData = {
-        fullName: addFormData.fullName, cin: addFormData.cin, dateOfBirth: addFormData.dateOfBirth, email: addFormData.email, phone: addFormData.phone, faculty: addFormData.faculty, memberStatus: addFormData.memberStatus, tier: addFormData.tier, paymentStatus: addFormData.paymentStatus, status: addFormData.paymentStatus === 'paid' ? 'active' : 'pending', price: addFormData.price, paymentMethod: 'Manuel/Admin', startDate: new Date().toISOString(), endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
-    };
+      fullName: addFormData.fullName,
+      cin: addFormData.cin,
+      dateOfBirth: addFormData.dateOfBirth,
+      email: addFormData.email,
+      phone: addFormData.phone,
+      faculty: addFormData.faculty,
+      memberStatus: addFormData.memberStatus,
+      tier: addFormData.tier,
+      paymentStatus: addFormData.paymentStatus,
+      status: addFormData.paymentStatus === 'paid' ? 'active' : 'pending',
+      price: addFormData.price,
+      paymentMethod: 'Manuel/Admin',
+      startDate: new Date().toISOString(),
+      endDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
+    }
 
     try {
-        const response = await fetch('/api/membership', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', },
-            body: JSON.stringify(memberData),
-        });
+      const response = await fetch('/api/membership', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(memberData),
+      })
 
-        if (response.ok) {
-            toast({ title: 'Succès', description: 'Le nouveau membre a été ajouté manuellement.', });
-            setShowAddMemberModal(false);
-            setAddFormData(initialAddFormData);
-            fetchMembers();
-        } else {
-            let errorDetails;
+      if (response.ok) {
+        toast({ title: 'Succès', description: 'Le nouveau membre a été ajouté manuellement.' })
+        setShowAddMemberModal(false)
+        setAddFormData(initialAddFormData)
+        fetchMembers()
+      } else {
+        let errorDetails
 
-            try {
-                if (response.headers.get('content-type')?.includes('application/json')) {
-                    errorDetails = await response.json();
-                } else {
-                    const textError = await response.text();
-                    throw new Error(`Le serveur a retourné une erreur ${response.status} sans format JSON attendu.`);
-                }
-            } catch (jsonError) {
-                throw new Error(`Le serveur a répondu avec le statut ${response.status}. Impossible de lire la réponse (Probablement une erreur interne du serveur 500).`);
-            }
-
-            throw new Error(errorDetails.message || `API responded with status ${response.status}.`);
+        try {
+          if (response.headers.get('content-type')?.includes('application/json')) {
+            errorDetails = await response.json()
+          } else {
+            const textError = await response.text()
+            throw new Error(
+              `Le serveur a retourné une erreur ${response.status} sans format JSON attendu.`,
+            )
+          }
+        } catch (jsonError) {
+          throw new Error(
+            `Le serveur a répondu avec le statut ${response.status}. Impossible de lire la réponse (Probablement une erreur interne du serveur 500).`,
+          )
         }
-    } catch (error) {
-        toast({
-            title: 'Erreur',
-            description: `Impossible d'ajouter le membre. Détails: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
-            variant: 'destructive',
-        });
-    }
-  };
 
+        throw new Error(errorDetails.message || `API responded with status ${response.status}.`)
+      }
+    } catch (error) {
+      toast({
+        title: 'Erreur',
+        description: `Impossible d'ajouter le membre. Détails: ${error instanceof Error ? error.message : 'Erreur inconnue'}`,
+        variant: 'destructive',
+      })
+    }
+  }
 
   const handleStatusUpdate = async (memberId: string, newStatus: string) => {
     try {
@@ -253,7 +294,7 @@ export default function MemberManagement() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: newStatus })
+        body: JSON.stringify({ status: newStatus }),
       })
 
       if (response.ok) {
@@ -296,14 +337,18 @@ export default function MemberManagement() {
 
     if (!selectedMember) return
 
-    const updatedTier = editFormData.memberStatus ? tierForMemberStatus(editFormData.memberStatus) : editFormData.tier;
-    const updatedPrice = editFormData.memberStatus ? priceForMemberStatus(editFormData.memberStatus) : selectedMember.price;
+    const updatedTier = editFormData.memberStatus
+      ? tierForMemberStatus(editFormData.memberStatus)
+      : editFormData.tier
+    const updatedPrice = editFormData.memberStatus
+      ? priceForMemberStatus(editFormData.memberStatus)
+      : selectedMember.price
 
     const dataToSend = {
       ...editFormData,
       tier: updatedTier,
       price: updatedPrice,
-    };
+    }
 
     try {
       const response = await fetch(`/api/membership/${selectedMember.id}`, {
@@ -311,7 +356,7 @@ export default function MemberManagement() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(dataToSend)
+        body: JSON.stringify(dataToSend),
       })
 
       if (response.ok) {
@@ -362,7 +407,7 @@ export default function MemberManagement() {
 
     try {
       const response = await fetch(`/api/membership/${memberId}`, {
-        method: 'DELETE'
+        method: 'DELETE',
       })
 
       if (response.ok) {
@@ -382,7 +427,6 @@ export default function MemberManagement() {
       })
     }
   }
-
 
   if (loading) {
     return (
@@ -412,22 +456,22 @@ export default function MemberManagement() {
               <h1 className="text-xl font-bold text-gray-900">Gestion des Membres</h1>
             </div>
 
-            <div className='flex gap-2'>
-                 <Button
-                    onClick={() => setShowBulkUploadModal(true)}
-                    variant="outline"
-                    className="border-[var(--otjm-red)] text-[var(--otjm-red)] hover:bg-[var(--otjm-red)]/5"
-                  >
-                    <Upload className="w-4 h-4 mr-2" />
-                    Importer (Bulk)
-                  </Button>
-                 <Button
-                    onClick={() => setShowAddMemberModal(true)}
-                    className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Ajouter un Membre
-                  </Button>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setShowBulkUploadModal(true)}
+                variant="outline"
+                className="border-[var(--otjm-red)] text-[var(--otjm-red)] hover:bg-[var(--otjm-red)]/5"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Importer (Bulk)
+              </Button>
+              <Button
+                onClick={() => setShowAddMemberModal(true)}
+                className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Ajouter un Membre
+              </Button>
             </div>
           </div>
         </div>
@@ -480,9 +524,7 @@ export default function MemberManagement() {
               <Users className="w-5 h-5" />
               Liste des Membres ({filteredMembers.length})
             </CardTitle>
-            <CardDescription>
-              Gérez tous les membres de l'OTJM
-            </CardDescription>
+            <CardDescription>Gérez tous les membres de l'OTJM</CardDescription>
           </CardHeader>
           <CardContent>
             {filteredMembers.length === 0 ? (
@@ -538,7 +580,9 @@ export default function MemberManagement() {
                         <td className="p-3">
                           <div className="text-sm">
                             <p>{new Date(member.startDate).toLocaleDateString('fr-FR')}</p>
-                            <p className="text-gray-500">→ {new Date(member.endDate).toLocaleDateString('fr-FR')}</p>
+                            <p className="text-gray-500">
+                              → {new Date(member.endDate).toLocaleDateString('fr-FR')}
+                            </p>
                           </div>
                         </td>
                         <td className="p-3">
@@ -586,7 +630,6 @@ export default function MemberManagement() {
           </CardContent>
         </Card>
       </main>
-
 
       <Modal
         isOpen={showViewModal}
@@ -642,7 +685,9 @@ export default function MemberManagement() {
                 <span className="text-gray-600">Date d'inscription</span>
                 <span className="font-medium">
                   {new Date(selectedMember.startDate).toLocaleDateString('fr-FR', {
-                    year: 'numeric', month: 'long', day: 'numeric'
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
                   })}
                 </span>
               </div>
@@ -651,7 +696,9 @@ export default function MemberManagement() {
                 <span className="text-gray-600">Date d'expiration</span>
                 <span className="font-medium">
                   {new Date(selectedMember.endDate).toLocaleDateString('fr-FR', {
-                    year: 'numeric', month: 'long', day: 'numeric'
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
                   })}
                 </span>
               </div>
@@ -666,29 +713,38 @@ export default function MemberManagement() {
             <DialogTitle>Modifier le membre</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleUpdate} className="space-y-4">
-
-             <div>
+            <div>
               <Label htmlFor="edit-memberStatus">Statut de l'adhérent</Label>
               <Select
                 value={editFormData.memberStatus}
                 onValueChange={(value) => handleMemberStatusChange(value, setEditFormData)}
               >
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
-                  {ALL_MEMBER_STATUSES.map(status => (
-                    <SelectItem key={status} value={status}>{status} ({priceForMemberStatus(status)} DT)</SelectItem>
+                  {ALL_MEMBER_STATUSES.map((status) => (
+                    <SelectItem key={status} value={status}>
+                      {status} ({priceForMemberStatus(status)} DT)
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-              <p className='text-xs text-gray-500 mt-1'>
-                Prix auto-calculé: {editFormData.price} DT | Type de base: {getTierText(editFormData.tier)}
+              <p className="text-xs text-gray-500 mt-1">
+                Prix auto-calculé: {editFormData.price} DT | Type de base:{' '}
+                {getTierText(editFormData.tier)}
               </p>
             </div>
 
             <div>
               <Label htmlFor="edit-status">Statut</Label>
-              <Select value={editFormData.status} onValueChange={(value) => setEditFormData({...editFormData, status: value})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={editFormData.status}
+                onValueChange={(value) => setEditFormData({ ...editFormData, status: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">En attente</SelectItem>
                   <SelectItem value="active">Actif</SelectItem>
@@ -699,8 +755,15 @@ export default function MemberManagement() {
 
             <div>
               <Label htmlFor="edit-paymentStatus">Statut de paiement</Label>
-              <Select value={editFormData.paymentStatus} onValueChange={(value) => setEditFormData({...editFormData, paymentStatus: value})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+              <Select
+                value={editFormData.paymentStatus}
+                onValueChange={(value) =>
+                  setEditFormData({ ...editFormData, paymentStatus: value })
+                }
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="pending">En attente</SelectItem>
                   <SelectItem value="paid">Payé</SelectItem>
@@ -711,12 +774,18 @@ export default function MemberManagement() {
             <input type="hidden" name="tier" value={editFormData.tier} />
             <input type="hidden" name="price" value={editFormData.price} />
 
-
             <div className="flex gap-2 pt-4">
               <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 Mettre à jour
               </Button>
-              <Button type="button" variant="outline" onClick={() => { setShowEditModal(false); setSelectedMember(null); }}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowEditModal(false)
+                  setSelectedMember(null)
+                }}
+              >
                 Annuler
               </Button>
             </div>
@@ -727,30 +796,39 @@ export default function MemberManagement() {
       <Dialog open={showBulkUploadModal} onOpenChange={setShowBulkUploadModal}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className='flex items-center gap-2'>
-                <Upload className='w-5 h-5 text-[var(--otjm-red)]' />
-                Importer des Membres (Bulk)
+            <DialogTitle className="flex items-center gap-2">
+              <Upload className="w-5 h-5 text-[var(--otjm-red)]" />
+              Importer des Membres (Bulk)
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleBulkUpload} className="space-y-6">
-            <p className='text-sm text-gray-600'>
-                Veuillez télécharger un fichier Excel (.xls, .xlsx) ou CSV contenant les données des membres.
-                Assurez-vous que les colonnes correspondent au modèle requis (Nom Complet, CIN, Email, Tél, etc.).
+            <p className="text-sm text-gray-600">
+              Veuillez télécharger un fichier Excel (.xls, .xlsx) ou CSV contenant les données des
+              membres. Assurez-vous que les colonnes correspondent au modèle requis (Nom Complet,
+              CIN, Email, Tél, etc.).
             </p>
             <div>
-                <Label htmlFor="bulkFile">Sélectionner le Fichier (.XLS/.CSV) *</Label>
-                <Input
-                    id="bulkFile" name="bulkFile" type="file" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                    required className="pt-2"
-                />
+              <Label htmlFor="bulkFile">Sélectionner le Fichier (.XLS/.CSV) *</Label>
+              <Input
+                id="bulkFile"
+                name="bulkFile"
+                type="file"
+                accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+                required
+                className="pt-2"
+              />
             </div>
             <div>
-                <p className='text-xs text-gray-500'>
-                    Vous n'avez pas de modèle?
-                    <a href="/templates/member_import_template.xlsx" download className='text-blue-600 hover:underline ml-1'>
-                        Télécharger le modèle ici.
-                    </a>
-                </p>
+              <p className="text-xs text-gray-500">
+                Vous n'avez pas de modèle?
+                <a
+                  href="/templates/member_import_template.xlsx"
+                  download
+                  className="text-blue-600 hover:underline ml-1"
+                >
+                  Télécharger le modèle ici.
+                </a>
+              </p>
             </div>
             <div className="flex gap-2 pt-4">
               <Button type="submit" className="bg-green-600 hover:bg-green-700">
@@ -765,106 +843,142 @@ export default function MemberManagement() {
         </DialogContent>
       </Dialog>
 
-
       <Dialog open={showAddMemberModal} onOpenChange={setShowAddMemberModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Ajouter un Membre Manuellement</DialogTitle>
           </DialogHeader>
           <form onSubmit={handleAddMember} className="space-y-4">
-
             <div>
               <Label htmlFor="fullName">Nom et prénom *</Label>
-              <Input id="fullName" required
+              <Input
+                id="fullName"
+                required
                 value={addFormData.fullName}
-                onChange={(e) => setAddFormData({...addFormData, fullName: e.target.value})}
+                onChange={(e) => setAddFormData({ ...addFormData, fullName: e.target.value })}
               />
             </div>
 
-            <div className='grid grid-cols-2 gap-4'>
-                <div>
-                  <Label htmlFor="cin">CIN</Label>
-                  <Input id="cin"
-                    value={addFormData.cin}
-                    onChange={(e) => setAddFormData({...addFormData, cin: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="dateOfBirth">Date de naissance *</Label>
-                  <Input id="dateOfBirth" type="date" required
-                    value={addFormData.dateOfBirth}
-                    onChange={(e) => setAddFormData({...addFormData, dateOfBirth: e.target.value})}
-                  />
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="cin">CIN</Label>
+                <Input
+                  id="cin"
+                  value={addFormData.cin}
+                  onChange={(e) => setAddFormData({ ...addFormData, cin: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="dateOfBirth">Date de naissance *</Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  required
+                  value={addFormData.dateOfBirth}
+                  onChange={(e) => setAddFormData({ ...addFormData, dateOfBirth: e.target.value })}
+                />
+              </div>
             </div>
 
-            <div className='grid grid-cols-2 gap-4'>
-                <div>
-                  <Label htmlFor="email">E-mail *</Label>
-                  <Input id="email" type="email" required
-                    value={addFormData.email}
-                    onChange={(e) => setAddFormData({...addFormData, email: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="phone">N° de téléphone *</Label>
-                  <Input id="phone" type="tel" required
-                    value={addFormData.phone}
-                    onChange={(e) => setAddFormData({...addFormData, phone: e.target.value})}
-                  />
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="email">E-mail *</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  value={addFormData.email}
+                  onChange={(e) => setAddFormData({ ...addFormData, email: e.target.value })}
+                />
+              </div>
+              <div>
+                <Label htmlFor="phone">N° de téléphone *</Label>
+                <Input
+                  id="phone"
+                  type="tel"
+                  required
+                  value={addFormData.phone}
+                  onChange={(e) => setAddFormData({ ...addFormData, phone: e.target.value })}
+                />
+              </div>
             </div>
 
             <div>
-              <Label htmlFor="faculty" className='mb-2 block'>Faculté d'origine *</Label>
+              <Label htmlFor="faculty" className="mb-2 block">
+                Faculté d'origine *
+              </Label>
               <RadioGroup
                 value={addFormData.faculty}
-                onValueChange={(value) => setAddFormData({...addFormData, faculty: value})}
+                onValueChange={(value) => setAddFormData({ ...addFormData, faculty: value })}
                 className="flex gap-4"
               >
-                <div className="flex items-center space-x-2"><RadioGroupItem value="FMT" id="FMT" /><Label htmlFor="FMT">FMT</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="FMS" id="FMS" /><Label htmlFor="FMS">FMS</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="FMM" id="FMM" /><Label htmlFor="FMM">FMM</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="FMSF" id="FMSF" /><Label htmlFor="FMSF">FMSF</Label></div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="FMT" id="FMT" />
+                  <Label htmlFor="FMT">FMT</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="FMS" id="FMS" />
+                  <Label htmlFor="FMS">FMS</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="FMM" id="FMM" />
+                  <Label htmlFor="FMM">FMM</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="FMSF" id="FMSF" />
+                  <Label htmlFor="FMSF">FMSF</Label>
+                </div>
               </RadioGroup>
             </div>
 
             <div>
-              <Label htmlFor="memberStatus" className='mb-2 block'>Statut de l'adhérent *</Label>
+              <Label htmlFor="memberStatus" className="mb-2 block">
+                Statut de l'adhérent *
+              </Label>
               <RadioGroup
                 value={addFormData.memberStatus}
                 onValueChange={handleMemberStatusChange}
                 className="flex flex-col space-y-1"
               >
-                {['Externe', 'Interne', 'Resident', 'En instance de thèse'].map(status => (
-                    <div key={status} className="flex items-center space-x-2">
-                        <RadioGroupItem value={status} id={status} />
-                        <Label htmlFor={status}>{status} (<span className='font-semibold text-[var(--otjm-red)]'>{priceForMemberStatus(status)} DT</span>)</Label>
-                    </div>
+                {['Externe', 'Interne', 'Resident', 'En instance de thèse'].map((status) => (
+                  <div key={status} className="flex items-center space-x-2">
+                    <RadioGroupItem value={status} id={status} />
+                    <Label htmlFor={status}>
+                      {status} (
+                      <span className="font-semibold text-[var(--otjm-red)]">
+                        {priceForMemberStatus(status)} DT
+                      </span>
+                      )
+                    </Label>
+                  </div>
                 ))}
               </RadioGroup>
             </div>
 
-            <div className='grid grid-cols-1'>
-                 <div className='col-span-1'>
-                    <Label className='font-bold text-lg flex justify-between items-center bg-gray-100 p-2 rounded-md'>
-                        <span>Frais d'adhésion:</span>
-                        <span className='text-[var(--otjm-red)]'>{addFormData.price} DT</span>
-                    </Label>
+            <div className="grid grid-cols-1">
+              <div className="col-span-1">
+                <Label className="font-bold text-lg flex justify-between items-center bg-gray-100 p-2 rounded-md">
+                  <span>Frais d'adhésion:</span>
+                  <span className="text-[var(--otjm-red)]">{addFormData.price} DT</span>
+                </Label>
 
-                    <input type="hidden" name="tier" value={addFormData.tier} />
-                    <input type="hidden" name="price" value={addFormData.price} />
-                </div>
+                <input type="hidden" name="tier" value={addFormData.tier} />
+                <input type="hidden" name="price" value={addFormData.price} />
+              </div>
             </div>
 
             <div>
               <Label htmlFor="paymentStatus">Statut de Paiement * (Payer ou Non)</Label>
               <Select
                 value={addFormData.paymentStatus}
-                onValueChange={(value) => setAddFormData({...addFormData, paymentStatus: value})}
+                onValueChange={(value) => setAddFormData({ ...addFormData, paymentStatus: value })}
                 required
               >
-                <SelectTrigger className={addFormData.paymentStatus === 'paid' ? 'border-green-500' : 'border-yellow-500'}>
+                <SelectTrigger
+                  className={
+                    addFormData.paymentStatus === 'paid' ? 'border-green-500' : 'border-yellow-500'
+                  }
+                >
                   <SelectValue placeholder="Sélectionner le statut de paiement" />
                 </SelectTrigger>
                 <SelectContent>
@@ -878,11 +992,7 @@ export default function MemberManagement() {
               <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 Ajouter le Membre
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowAddMemberModal(false)}
-              >
+              <Button type="button" variant="outline" onClick={() => setShowAddMemberModal(false)}>
                 Annuler
               </Button>
             </div>

@@ -21,6 +21,7 @@ npm run start          # NODE_ENV=production via cross-env
 ```
 
 Checklist:
+
 1. Open `/membership`, complete the modal with a test email → you must land on the Flouci test payment page (if you get a JSON 401 instead, the middleware allowlist regressed — see `src/middleware.ts` PUBLIC_API).
 2. Pay with Flouci's test card → you must land on `/membership/success`.
 3. Verify DB: the Membership row is `paymentStatus: 'paid'`, `status: 'active'`; `PaymentEvent` contains `created` + `verified_success` (source `return` or `webhook` — whichever won the race; the loser logs `already_final`).

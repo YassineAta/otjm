@@ -12,4 +12,7 @@ async function main() {
   await fs.writeFile('scripts/sample-card.pdf', pdf)
   console.log('png', backPng.length, 'bytes · pdf', pdf.length, 'bytes')
 }
-main().catch((e) => { console.error(e); process.exit(1) })
+main().catch((e) => {
+  console.error(e)
+  process.exit(1)
+})

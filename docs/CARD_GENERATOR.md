@@ -5,6 +5,7 @@
 ## What a member receives
 
 After a confirmed payment, an email (FR + AR) with two attachments:
+
 - `carte-otjm-NNNN.png` — the personalized back side, for phone screens.
 - `carte-otjm-NNNN.pdf` — two pages (front + back) at the artwork's physical size (~91.5 × 60 mm), for printing.
 
@@ -20,14 +21,14 @@ flowchart LR
     B --> E[(PaymentEvent trail)]
 ```
 
-| Piece | File | Key decisions |
-|---|---|---|
-| Templates | `src/assets/card/card-template-{1,2}.png` | One-time 300-DPI rasterization of the .ai (via `pdftoppm` — the .ai is PDF-compatible). Re-rasterize only if the design changes. |
-| Compositor | `src/lib/card.ts` | sharp composite of an SVG overlay. **Text is converted to vector paths with opentype.js** (fonts ship in `src/assets/card/fonts/`: Anton for digits, Cinzel for name — both OFL). No system-font dependency → byte-identical output on any server, no headless browser (ADR-004). |
-| Geometry | `TEMPLATE` const in card.ts | Measured in template-2 pixel space (1082×709): badge patch x104 y510 278×118 fill `#381f21`; name centered cx730 baseline 512; validity baseline 552 (social-row divider is at y≈573 — don't go lower). |
-| Numbering | `src/lib/card-delivery.ts` | Sequential `Membership.cardNumber` (unique index; max+1 with one retry on clash). Assigned once, never reused — matches the printed-number semantics of the design. |
-| Idempotency | `Membership.cardSentAt` | return + webhook both fire on success; the first delivery wins, replays skip. Admin "resend" uses `force=true`. |
-| Email | `src/lib/mail.ts` | nodemailer over SMTP, all coordinates in env (ADR-005). Unconfigured SMTP → delivery is *skipped and logged* (`PaymentEvent email_skipped`), never an error — payments must not depend on email health. |
+| Piece       | File                                      | Key decisions                                                                                                                                                                                                                                                                     |
+| ----------- | ----------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Templates   | `src/assets/card/card-template-{1,2}.png` | One-time 300-DPI rasterization of the .ai (via `pdftoppm` — the .ai is PDF-compatible). Re-rasterize only if the design changes.                                                                                                                                                  |
+| Compositor  | `src/lib/card.ts`                         | sharp composite of an SVG overlay. **Text is converted to vector paths with opentype.js** (fonts ship in `src/assets/card/fonts/`: Anton for digits, Cinzel for name — both OFL). No system-font dependency → byte-identical output on any server, no headless browser (ADR-004). |
+| Geometry    | `TEMPLATE` const in card.ts               | Measured in template-2 pixel space (1082×709): badge patch x104 y510 278×118 fill `#381f21`; name centered cx730 baseline 512; validity baseline 552 (social-row divider is at y≈573 — don't go lower).                                                                           |
+| Numbering   | `src/lib/card-delivery.ts`                | Sequential `Membership.cardNumber` (unique index; max+1 with one retry on clash). Assigned once, never reused — matches the printed-number semantics of the design.                                                                                                               |
+| Idempotency | `Membership.cardSentAt`                   | return + webhook both fire on success; the first delivery wins, replays skip. Admin "resend" uses `force=true`.                                                                                                                                                                   |
+| Email       | `src/lib/mail.ts`                         | nodemailer over SMTP, all coordinates in env (ADR-005). Unconfigured SMTP → delivery is _skipped and logged_ (`PaymentEvent email_skipped`), never an error — payments must not depend on email health.                                                                           |
 
 ## Operational notes
 
@@ -39,5 +40,5 @@ flowchart LR
 ## Known limits / how to extend
 
 - The provided design is the **"Membre d'honneur"** variant (the badge pill and the Arabic title "عضو شرفي" are baked into the artwork). For tier-specific cards (Externe/Interne), get per-tier .ai exports from the designer, rasterize each to `card-template-2-<tier>.png`, and pick by `membership.tier` in `card.ts` — the overlay logic doesn't change.
-- Latin-script personalization only: opentype.js does not do Arabic shaping; the Arabic on the card is part of the static artwork (already correctly shaped). If Arabic *names* are ever needed, swap path generation for a shaping-aware renderer (e.g. harfbuzzjs) — isolated inside `centeredTextPath()`.
+- Latin-script personalization only: opentype.js does not do Arabic shaping; the Arabic on the card is part of the static artwork (already correctly shaped). If Arabic _names_ are ever needed, swap path generation for a shaping-aware renderer (e.g. harfbuzzjs) — isolated inside `centeredTextPath()`.
 - Cards are generated on demand and never stored — no PII-bearing files at rest; regenerate any time from DB state.

@@ -10,10 +10,7 @@ export async function POST(request: NextRequest) {
     const { title, excerpt, content, category, documentType, imageUrl, date, linkUrl } = body
 
     if (!title || !excerpt || !content || !category || !documentType) {
-      return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      )
+      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })
     }
 
     const archive = await db.archive.create({
@@ -26,52 +23,45 @@ export async function POST(request: NextRequest) {
         imageUrl: imageUrl || null,
         authorId: auth.session.user.id,
         date: date ? new Date(date) : new Date(),
-        linkUrl: linkUrl || null
+        linkUrl: linkUrl || null,
       },
       include: {
         author: {
           select: {
             id: true,
             name: true,
-            email: true
-          }
-        }
-      }
+            email: true,
+          },
+        },
+      },
     })
-    
+
     return NextResponse.json(archive, { status: 201 })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to create archive' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to create archive' }, { status: 500 })
   }
 }
 export async function GET(request: NextRequest) {
-    try {
-        // Fetch all archive records
-        const archives = await db.archive.findMany({
-            include: {
-                author: {
-                    select: { id: true, name: true, email: true }
-                }
-            },
-            orderBy: {
-                // Assuming you want the newest archives first
-                date: 'desc',
-            }
-        });
+  try {
+    // Fetch all archive records
+    const archives = await db.archive.findMany({
+      include: {
+        author: {
+          select: { id: true, name: true, email: true },
+        },
+      },
+      orderBy: {
+        // Assuming you want the newest archives first
+        date: 'desc',
+      },
+    })
 
-        return NextResponse.json(archives, {
-            status: 200,
-            // Historical documents rarely change — cache generously client-side.
-            headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400' },
-        });
-
-    } catch (error) {
-        return NextResponse.json(
-            { error: 'Failed to retrieve archives.' },
-            { status: 500 }
-        );
-    }
+    return NextResponse.json(archives, {
+      status: 200,
+      // Historical documents rarely change — cache generously client-side.
+      headers: { 'Cache-Control': 'public, max-age=3600, stale-while-revalidate=86400' },
+    })
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to retrieve archives.' }, { status: 500 })
+  }
 }

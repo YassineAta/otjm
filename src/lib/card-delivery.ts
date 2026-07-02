@@ -59,7 +59,7 @@ export async function deliverMemberCard(
       return 'skipped'
     }
 
-    const cardNumber = m.cardNumber ?? await assignCardNumber(m.id)
+    const cardNumber = m.cardNumber ?? (await assignCardNumber(m.id))
     const { backPng, pdf } = await generateMemberCard({
       fullName: m.name,
       cardNumber,
@@ -79,7 +79,12 @@ export async function deliverMemberCard(
     return 'sent'
   } catch (err) {
     console.error('[card-delivery] failed', err)
-    await logEvent(membershipId, 'email_failed', err instanceof Error ? err.message : 'unknown error', source)
+    await logEvent(
+      membershipId,
+      'email_failed',
+      err instanceof Error ? err.message : 'unknown error',
+      source,
+    )
     return 'failed'
   }
 }

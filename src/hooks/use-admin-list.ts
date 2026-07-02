@@ -5,7 +5,6 @@ interface UseAdminListOptions<T> {
   /** French description for the error toast shown when the fetch throws. */
   errorMessage?: string
   /** Optional mapping applied to the raw JSON list before storing it. */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   map?: (data: any[]) => T[]
 }
 

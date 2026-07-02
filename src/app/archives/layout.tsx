@@ -2,7 +2,8 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Archives',
-  description: "Archives des actions, communiqués et documents officiels de l'Organisation Tunisienne Des Jeunes Médecins (OTJM).",
+  description:
+    "Archives des actions, communiqués et documents officiels de l'Organisation Tunisienne Des Jeunes Médecins (OTJM).",
   alternates: { languages: { fr: '/archives', ar: '/ar/archives', 'x-default': '/archives' } },
   openGraph: {
     title: 'Archives | OTJM',

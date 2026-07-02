@@ -59,7 +59,9 @@ describe('adminMembershipCreateSchema (admin manual entry)', () => {
   })
 
   it('rejects invented payment statuses', () => {
-    expect(adminMembershipCreateSchema.safeParse({ ...valid, paymentStatus: 'comped' }).success).toBe(false)
+    expect(
+      adminMembershipCreateSchema.safeParse({ ...valid, paymentStatus: 'comped' }).success,
+    ).toBe(false)
   })
 
   it('rejects absurd prices', () => {

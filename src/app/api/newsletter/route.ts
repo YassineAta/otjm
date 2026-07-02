@@ -17,7 +17,10 @@ export async function POST(req: NextRequest) {
 
     const existing = await db.newsletter.findUnique({ where: { email } })
     if (existing) {
-      await db.newsletter.update({ where: { email }, data: { active: true, consentGivenAt: new Date() } })
+      await db.newsletter.update({
+        where: { email },
+        data: { active: true, consentGivenAt: new Date() },
+      })
       return NextResponse.json({ ok: true })
     }
 

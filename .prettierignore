@@ -1,0 +1,18 @@
+# Sorties de build et dépendances — jamais formatées
+node_modules
+.next
+build
+out
+coverage
+
+# Fichiers générés / binaires
+package-lock.json
+*.tsbuildinfo
+next-env.d.ts
+prisma/**/*.pdf
+scripts/*.pdf
+scripts/*.png
+public
+
+# Le client Prisma est généré
+src/generated

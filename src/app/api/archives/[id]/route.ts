@@ -2,48 +2,36 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { requireAdmin } from '@/lib/auth'
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const { id } = await params;
+    const { id } = await params
     const archive = await db.archive.findUnique({
       where: { id: id },
       include: {
         author: {
           select: {
             id: true,
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     })
-    
+
     if (!archive) {
-      return NextResponse.json(
-        { error: 'Archive not found' },
-        { status: 404 }
-      )
+      return NextResponse.json({ error: 'Archive not found' }, { status: 404 })
     }
-    
+
     return NextResponse.json(archive)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch archive' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to fetch archive' }, { status: 500 })
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await requireAdmin()
   if (auth.error) return auth.error
   try {
-    const { id } = await params;
+    const { id } = await params
     const body = await request.json()
     const { title, excerpt, content, category, documentType, imageUrl, date, linkUrl } = body
 
@@ -56,7 +44,7 @@ export async function PATCH(
     if (imageUrl !== undefined) updateData.imageUrl = imageUrl || null
     if (linkUrl !== undefined) updateData.linkUrl = linkUrl || null
     if (date !== undefined) updateData.date = date ? new Date(date) : undefined
-    
+
     const archive = await db.archive.update({
       where: { id: id },
       data: updateData,
@@ -64,38 +52,32 @@ export async function PATCH(
         author: {
           select: {
             id: true,
-            name: true
-          }
-        }
-      }
+            name: true,
+          },
+        },
+      },
     })
-    
+
     return NextResponse.json(archive)
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to update archive' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to update archive' }, { status: 500 })
   }
 }
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = await requireAdmin()
   if (auth.error) return auth.error
   try {
-    const { id } = await params;
+    const { id } = await params
     await db.archive.delete({
-      where: { id: id }
+      where: { id: id },
     })
-    
+
     return NextResponse.json({ success: true })
   } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to delete archive' },
-      { status: 500 }
-    )
+    return NextResponse.json({ error: 'Failed to delete archive' }, { status: 500 })
   }
 }

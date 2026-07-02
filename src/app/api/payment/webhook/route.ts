@@ -12,13 +12,15 @@ export async function POST(req: NextRequest) {
   if (limited) return limited
 
   let payload: unknown = {}
-  try { payload = await req.json() } catch { /* empty body is fine */ }
+  try {
+    payload = await req.json()
+  } catch {
+    /* empty body is fine */
+  }
 
   const body = payload as { payment_id?: string; result?: { payment_id?: string } }
   const paymentId =
-    body?.payment_id ||
-    body?.result?.payment_id ||
-    req.nextUrl.searchParams.get('payment_id')
+    body?.payment_id || body?.result?.payment_id || req.nextUrl.searchParams.get('payment_id')
 
   if (!paymentId) {
     return NextResponse.json({ ok: false, reason: 'missing_payment_id' }, { status: 400 })

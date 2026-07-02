@@ -7,6 +7,9 @@
     "build": "prisma generate && next build && ncp .next/static .next/standalone/.next/static && ncp public .next/standalone/public",
     "start": "cross-env NODE_ENV=production node .next/standalone/server.js",
     "lint": "next lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
@@ -14,6 +17,8 @@
     "db:seed": "prisma db seed"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1078.0",
+    "@aws-sdk/s3-request-presigner": "^3.1078.0",
     "@hookform/resolvers": "^5.1.1",
     "@prisma/client": "^6.11.1",
     "@radix-ui/react-accordion": "^1.2.11",
@@ -83,6 +88,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "ncp": "^2.0.0",
+    "prettier": "^3.9.4",
     "tailwindcss": "^4",
     "tsx": "^4.20.6",
     "tw-animate-css": "^1.3.5",

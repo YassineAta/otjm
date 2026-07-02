@@ -6,22 +6,22 @@ Application full-stack pour l'Organisation Tunisienne des Jeunes Médecins. Incl
 
 ## Stack
 
-| Couche | Technologie |
-|---|---|
-| Framework | Next.js 15 (App Router) + React 19 |
-| Langage | TypeScript 5 strict |
-| Base de données | MongoDB Atlas via Prisma ORM v6 |
-| Authentification | NextAuth.js v4 (credentials) |
-| Styling | Tailwind CSS 4 + shadcn/ui (Radix) |
-| Animations | Framer Motion 12 |
-| Formulaires | React Hook Form + Zod |
-| Internationalisation | next-intl 4 (FR/AR) |
-| Tableaux | TanStack Table |
-| État global | Zustand |
-| HTTP client | Axios |
-| Export/Import | xlsx |
-| Images | Sharp |
-| Build | Next.js standalone output |
+| Couche               | Technologie                        |
+| -------------------- | ---------------------------------- |
+| Framework            | Next.js 15 (App Router) + React 19 |
+| Langage              | TypeScript 5 strict                |
+| Base de données      | MongoDB Atlas via Prisma ORM v6    |
+| Authentification     | NextAuth.js v4 (credentials)       |
+| Styling              | Tailwind CSS 4 + shadcn/ui (Radix) |
+| Animations           | Framer Motion 12                   |
+| Formulaires          | React Hook Form + Zod              |
+| Internationalisation | next-intl 4 (FR/AR)                |
+| Tableaux             | TanStack Table                     |
+| État global          | Zustand                            |
+| HTTP client          | Axios                              |
+| Export/Import        | xlsx                               |
+| Images               | Sharp                              |
+| Build                | Next.js standalone output          |
 
 ---
 
@@ -52,14 +52,14 @@ npm run dev
 
 Toutes les variables sont requises en production.
 
-| Variable | Description |
-|---|---|
-| `DATABASE_URL` | URI MongoDB Atlas : `mongodb+srv://user:pass@cluster.mongodb.net/otjm` |
-| `NEXTAUTH_SECRET` | Clé secrète NextAuth. Générer : `openssl rand -base64 32` |
-| `NEXTAUTH_URL` | URL de base de l'application. Ex : `https://otjm.tn` |
-| `ADMIN_SLUG` | Segment d'URL secret pour accéder au panel admin. Ex : `a3f9b2`. Générer : `node -e "console.log(require('crypto').randomBytes(6).toString('hex'))"` |
-| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `MAIL_FROM` | Coordonnées SMTP pour l'envoi de la carte de membre par email (voir `docs/CARD_GENERATOR.md`) |
-| `DEV_AUTH_BYPASS` | Dev uniquement : `1` pour désactiver l'auth admin en local (ignoré hors `NODE_ENV=development`) |
+| Variable                                                            | Description                                                                                                                                          |
+| ------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                                                      | URI MongoDB Atlas : `mongodb+srv://user:pass@cluster.mongodb.net/otjm`                                                                               |
+| `NEXTAUTH_SECRET`                                                   | Clé secrète NextAuth. Générer : `openssl rand -base64 32`                                                                                            |
+| `NEXTAUTH_URL`                                                      | URL de base de l'application. Ex : `https://otjm.tn`                                                                                                 |
+| `ADMIN_SLUG`                                                        | Segment d'URL secret pour accéder au panel admin. Ex : `a3f9b2`. Générer : `node -e "console.log(require('crypto').randomBytes(6).toString('hex'))"` |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `MAIL_FROM` | Coordonnées SMTP pour l'envoi de la carte de membre par email (voir `docs/CARD_GENERATOR.md`)                                                        |
+| `DEV_AUTH_BYPASS`                                                   | Dev uniquement : `1` pour désactiver l'auth admin en local (ignoré hors `NODE_ENV=development`)                                                      |
 
 ---
 
@@ -141,102 +141,109 @@ otjm/
 ### Modèles Prisma
 
 #### User
+
 Auteurs d'articles. Distinct de `Admin` (qui gère l'accès au dashboard).
 
-| Champ | Type | Notes |
-|---|---|---|
-| id | String | ObjectId |
-| email | String | unique |
-| name | String? | — |
-| role | String | défaut : "member" |
-| createdAt | DateTime | — |
-| updatedAt | DateTime | — |
+| Champ     | Type     | Notes             |
+| --------- | -------- | ----------------- |
+| id        | String   | ObjectId          |
+| email     | String   | unique            |
+| name      | String?  | —                 |
+| role      | String   | défaut : "member" |
+| createdAt | DateTime | —                 |
+| updatedAt | DateTime | —                 |
 
 Relations : `news News[]`, `archives Archive[]`
 
 #### Admin
+
 Comptes d'accès au dashboard. Authentifiés via NextAuth credentials.
 
-| Champ | Type | Notes |
-|---|---|---|
-| id | String | ObjectId |
-| email | String | unique |
-| hashedPassword | String | bcrypt 12 rounds |
-| name | String? | — |
-| role | String | "admin" ou "superadmin", défaut "superadmin" |
+| Champ          | Type    | Notes                                        |
+| -------------- | ------- | -------------------------------------------- |
+| id             | String  | ObjectId                                     |
+| email          | String  | unique                                       |
+| hashedPassword | String  | bcrypt 12 rounds                             |
+| name           | String? | —                                            |
+| role           | String  | "admin" ou "superadmin", défaut "superadmin" |
 
 #### Membership
+
 Enregistrements d'adhésion soumis via le formulaire public ou importés.
 
-| Champ | Type | Notes |
-|---|---|---|
-| id | String | ObjectId |
-| name | String | défaut : "" |
-| email | String | unique |
-| tier | String | "student" ou "young-doctor" |
-| status | String | "active", "pending", "cancelled" |
-| paymentMethod | String | — |
-| paymentStatus | String | "paid", "pending", "failed" |
-| startDate | DateTime | — |
-| endDate | DateTime | — |
-| price | Float | en DT |
-| memberStatus | String? | statut exact transmis par le formulaire |
-| faculty | String? | — |
-| cin | String? | — |
-| phone | String? | — |
-| dateOfBirth | DateTime? | — |
+| Champ         | Type      | Notes                                   |
+| ------------- | --------- | --------------------------------------- |
+| id            | String    | ObjectId                                |
+| name          | String    | défaut : ""                             |
+| email         | String    | unique                                  |
+| tier          | String    | "student" ou "young-doctor"             |
+| status        | String    | "active", "pending", "cancelled"        |
+| paymentMethod | String    | —                                       |
+| paymentStatus | String    | "paid", "pending", "failed"             |
+| startDate     | DateTime  | —                                       |
+| endDate       | DateTime  | —                                       |
+| price         | Float     | en DT                                   |
+| memberStatus  | String?   | statut exact transmis par le formulaire |
+| faculty       | String?   | —                                       |
+| cin           | String?   | —                                       |
+| phone         | String?   | —                                       |
+| dateOfBirth   | DateTime? | —                                       |
 
 #### News
+
 Articles d'actualité. Publiés ou en brouillon.
 
-| Champ | Type | Notes |
-|---|---|---|
-| id | String | ObjectId |
-| title | String | — |
-| excerpt | String? | — |
-| content | String? | — |
-| category | String? | clé de `CATEGORIES` |
-| imageUrl | String? | — |
-| sourceUrl | String? | — |
-| published | Boolean | défaut : false |
-| authorId | String? | ObjectId → User |
-| createdAt | DateTime | — |
+| Champ     | Type     | Notes               |
+| --------- | -------- | ------------------- |
+| id        | String   | ObjectId            |
+| title     | String   | —                   |
+| excerpt   | String?  | —                   |
+| content   | String?  | —                   |
+| category  | String?  | clé de `CATEGORIES` |
+| imageUrl  | String?  | —                   |
+| sourceUrl | String?  | —                   |
+| published | Boolean  | défaut : false      |
+| authorId  | String?  | ObjectId → User     |
+| createdAt | DateTime | —                   |
 
 #### Archive
+
 Documents historiques (rapports, déclarations, chartes…).
 
-| Champ | Type | Notes |
-|---|---|---|
-| id | String | ObjectId |
-| title | String | — |
-| excerpt | String | — |
-| content | String | — |
-| category | String | — |
-| documentType | String | Rapport, Déclaration, Charte, Communiqué, Autre |
-| imageUrl | String? | — |
-| linkUrl | String? | — |
-| date | DateTime | défaut : now() |
-| authorId | String | ObjectId → User (requis) |
+| Champ        | Type     | Notes                                           |
+| ------------ | -------- | ----------------------------------------------- |
+| id           | String   | ObjectId                                        |
+| title        | String   | —                                               |
+| excerpt      | String   | —                                               |
+| content      | String   | —                                               |
+| category     | String   | —                                               |
+| documentType | String   | Rapport, Déclaration, Charte, Communiqué, Autre |
+| imageUrl     | String?  | —                                               |
+| linkUrl      | String?  | —                                               |
+| date         | DateTime | défaut : now()                                  |
+| authorId     | String   | ObjectId → User (requis)                        |
 
 #### Contact
+
 Soumissions du formulaire de contact.
 
-| Champ | Type | Notes |
-|---|---|---|
-| id | String | ObjectId |
-| name | String | — |
-| email | String | — |
-| subject | String | max 256 chars |
-| message | String | max 5000 chars |
-| status | String | "unread" par défaut |
+| Champ   | Type   | Notes               |
+| ------- | ------ | ------------------- |
+| id      | String | ObjectId            |
+| name    | String | —                   |
+| email   | String | —                   |
+| subject | String | max 256 chars       |
+| message | String | max 5000 chars      |
+| status  | String | "unread" par défaut |
 
 #### Newsletter
+
 Abonnements email.
 
-| Champ | Type | Notes |
-|---|---|---|
-| id | String | ObjectId |
-| email | String | unique |
+| Champ  | Type    | Notes                                           |
+| ------ | ------- | ----------------------------------------------- |
+| id     | String  | ObjectId                                        |
+| email  | String  | unique                                          |
 | active | Boolean | défaut : true — réactivé si l'email se réabonne |
 
 ---
@@ -264,18 +271,18 @@ Pour accéder au panel : `https://votre-domaine.com/{ADMIN_SLUG}`
 Utilisé dans chaque route API protégée. En développement, retourne une session fictive `{ id: 'dev', role: 'superadmin', email: 'dev@localhost' }`. En production, vérifie la session NextAuth et le rôle.
 
 ```ts
-const auth = await requireAdmin();
-if ('error' in auth) return auth.error; // NextResponse 401/403
-const { session } = auth;
+const auth = await requireAdmin()
+if ('error' in auth) return auth.error // NextResponse 401/403
+const { session } = auth
 ```
 
 ### Rôles
 
-| Rôle | Accès |
-|---|---|
-| `superadmin` | Accès complet |
-| `admin` | Accès complet au dashboard |
-| `member` | Pas d'accès admin (réservé aux `User`, pas aux `Admin`) |
+| Rôle         | Accès                                                   |
+| ------------ | ------------------------------------------------------- |
+| `superadmin` | Accès complet                                           |
+| `admin`      | Accès complet au dashboard                              |
+| `member`     | Pas d'accès admin (réservé aux `User`, pas aux `Admin`) |
 
 ---
 
@@ -285,68 +292,69 @@ Toutes les routes se trouvent dans `src/app/api/`. Les routes marquées **[admin
 
 ### Actualités
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/api/news` | public | Liste les articles. `?published=true` pour filtrer. |
-| POST | `/api/news` | [admin] | Crée un article. Requis : `title`, `authorId`. |
-| PATCH | `/api/news/[id]` | [admin] | Met à jour un article. Tous les champs sont optionnels. |
-| DELETE | `/api/news/[id]` | [admin] | Supprime un article. Retourne 204. |
+| Méthode | Route            | Auth    | Description                                             |
+| ------- | ---------------- | ------- | ------------------------------------------------------- |
+| GET     | `/api/news`      | public  | Liste les articles. `?published=true` pour filtrer.     |
+| POST    | `/api/news`      | [admin] | Crée un article. Requis : `title`, `authorId`.          |
+| PATCH   | `/api/news/[id]` | [admin] | Met à jour un article. Tous les champs sont optionnels. |
+| DELETE  | `/api/news/[id]` | [admin] | Supprime un article. Retourne 204.                      |
 
 ### Archives
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/api/archives` | public | Liste toutes les archives, triées par date desc. |
-| GET | `/api/archives/[id]` | public | Retourne une archive par ID. |
-| POST | `/api/archives` | [admin] | Crée une archive. Requis : `title`, `excerpt`, `content`, `category`, `documentType`, `authorId`. |
-| PATCH | `/api/archives/[id]` | [admin] | Met à jour une archive. |
-| DELETE | `/api/archives/[id]` | [admin] | Supprime une archive. |
+| Méthode | Route                | Auth    | Description                                                                                       |
+| ------- | -------------------- | ------- | ------------------------------------------------------------------------------------------------- |
+| GET     | `/api/archives`      | public  | Liste toutes les archives, triées par date desc.                                                  |
+| GET     | `/api/archives/[id]` | public  | Retourne une archive par ID.                                                                      |
+| POST    | `/api/archives`      | [admin] | Crée une archive. Requis : `title`, `excerpt`, `content`, `category`, `documentType`, `authorId`. |
+| PATCH   | `/api/archives/[id]` | [admin] | Met à jour une archive.                                                                           |
+| DELETE  | `/api/archives/[id]` | [admin] | Supprime une archive.                                                                             |
 
 ### Adhésion
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/api/membership` | [admin] | Liste les membres. `?email=value` pour filtrer. |
-| POST | `/api/membership` | public (rate-limited) | Crée une adhésion. Requis : `fullName`, `email`, `memberStatus`, `price`, `startDate`, `endDate`. Retourne 409 si l'email existe déjà. |
-| PATCH | `/api/membership/[id]` | [admin] | Met à jour statut, paymentStatus, tier, memberStatus, price. Champs validés individuellement. |
-| DELETE | `/api/membership/[id]` | [admin] | Supprime un membre. |
-| POST | `/api/membership/bulk-import` | [admin] | Import Excel/CSV via `multipart/form-data` (champ `bulkFile`). Déduit `tier` et `price` depuis `memberStatus`. Ignore les emails déjà existants. |
+| Méthode | Route                         | Auth                  | Description                                                                                                                                      |
+| ------- | ----------------------------- | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GET     | `/api/membership`             | [admin]               | Liste les membres. `?email=value` pour filtrer.                                                                                                  |
+| POST    | `/api/membership`             | public (rate-limited) | Crée une adhésion. Requis : `fullName`, `email`, `memberStatus`, `price`, `startDate`, `endDate`. Retourne 409 si l'email existe déjà.           |
+| PATCH   | `/api/membership/[id]`        | [admin]               | Met à jour statut, paymentStatus, tier, memberStatus, price. Champs validés individuellement.                                                    |
+| DELETE  | `/api/membership/[id]`        | [admin]               | Supprime un membre.                                                                                                                              |
+| POST    | `/api/membership/bulk-import` | [admin]               | Import Excel/CSV via `multipart/form-data` (champ `bulkFile`). Déduit `tier` et `price` depuis `memberStatus`. Ignore les emails déjà existants. |
 
 **Logique de mapping import Excel :**
+
 - `memberStatus` = Résident / Interne / En instance de thèse → `tier: young-doctor`, `price: 20`
 - Autres → `tier: student`, `price: 10`
 - `paymentStatus: paid` → `status: active`, sinon `status: pending`
 
 ### Contact
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/api/contact` | [admin] | Liste les soumissions de contact. |
-| POST | `/api/contact` | public (rate-limited) | Soumet un message. Requis : `name`, `email`, `subject`, `message`. Validation format email, longueurs max. |
+| Méthode | Route          | Auth                  | Description                                                                                                |
+| ------- | -------------- | --------------------- | ---------------------------------------------------------------------------------------------------------- |
+| GET     | `/api/contact` | [admin]               | Liste les soumissions de contact.                                                                          |
+| POST    | `/api/contact` | public (rate-limited) | Soumet un message. Requis : `name`, `email`, `subject`, `message`. Validation format email, longueurs max. |
 
 ### Newsletter
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/api/newsletter` | [admin] | Liste les abonnés. |
-| POST | `/api/newsletter` | public (rate-limited) | Abonne un email. Si déjà existant, réactive (`active: true`). |
+| Méthode | Route             | Auth                  | Description                                                   |
+| ------- | ----------------- | --------------------- | ------------------------------------------------------------- |
+| GET     | `/api/newsletter` | [admin]               | Liste les abonnés.                                            |
+| POST    | `/api/newsletter` | public (rate-limited) | Abonne un email. Si déjà existant, réactive (`active: true`). |
 
 ### Utilisateurs admin
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/api/admin/users` | [admin] | Liste les comptes admin. |
-| POST | `/api/admin/users` | [admin] | Crée un compte admin. Requis : `email`, `name`, `role` (member ou admin). |
-| GET | `/api/admin/users/[id]` | [admin] | Retourne un compte admin par ID. |
-| PATCH | `/api/admin/users/[id]` | [admin] | Met à jour `name` et/ou `role`. |
-| DELETE | `/api/admin/users/[id]` | [admin] | Supprime un compte admin. |
-| POST | `/api/admin/users/[id]` (reset) | [admin] | Placeholder reset mot de passe. En production : implémenter l'envoi d'email. |
+| Méthode | Route                           | Auth    | Description                                                                  |
+| ------- | ------------------------------- | ------- | ---------------------------------------------------------------------------- |
+| GET     | `/api/admin/users`              | [admin] | Liste les comptes admin.                                                     |
+| POST    | `/api/admin/users`              | [admin] | Crée un compte admin. Requis : `email`, `name`, `role` (member ou admin).    |
+| GET     | `/api/admin/users/[id]`         | [admin] | Retourne un compte admin par ID.                                             |
+| PATCH   | `/api/admin/users/[id]`         | [admin] | Met à jour `name` et/ou `role`.                                              |
+| DELETE  | `/api/admin/users/[id]`         | [admin] | Supprime un compte admin.                                                    |
+| POST    | `/api/admin/users/[id]` (reset) | [admin] | Placeholder reset mot de passe. En production : implémenter l'envoi d'email. |
 
 ### Santé
 
-| Méthode | Route | Auth | Description |
-|---|---|---|---|
-| GET | `/api` | public | Health check. Retourne `{ message: "Hello, world!" }`. |
+| Méthode | Route  | Auth   | Description                                            |
+| ------- | ------ | ------ | ------------------------------------------------------ |
+| GET     | `/api` | public | Health check. Retourne `{ message: "Hello, world!" }`. |
 
 ### Rate limiting
 
@@ -366,9 +374,9 @@ Le système est basé sur un contexte React (`src/lib/i18n.tsx`), pas sur les fi
 **Utilisation dans un composant :**
 
 ```tsx
-import { useLanguage } from '@/lib/i18n';
+import { useLanguage } from '@/lib/i18n'
 
-const { t, lang, setLang } = useLanguage();
+const { t, lang, setLang } = useLanguage()
 // t.nav.home, t.news.title, etc.
 ```
 
@@ -382,12 +390,12 @@ L'objet `t` contient toutes les traductions : `nav`, `header`, `footer`, `catego
 
 Objet indexé par clé. Utilisé pour les filtres et l'affichage des badges.
 
-| Clé | Label | Couleur |
-|---|---|---|
-| `protests` | Protestation | red-400 |
-| `statements` | Déclaration | blue-400 |
-| `announcements` | Annonce | amber-400 |
-| `updates` | Mise à jour | slate-400 |
+| Clé             | Label        | Couleur   |
+| --------------- | ------------ | --------- |
+| `protests`      | Protestation | red-400   |
+| `statements`    | Déclaration  | blue-400  |
+| `announcements` | Annonce      | amber-400 |
+| `updates`       | Mise à jour  | slate-400 |
 
 ### `NAV`
 

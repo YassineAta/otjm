@@ -7,7 +7,13 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Modal } from '@/components/ui/modal'
 import {
@@ -20,7 +26,7 @@ import {
   Plus,
   Calendar,
   User,
-  Link as LinkIcon
+  Link as LinkIcon,
 } from 'lucide-react'
 import { useAdminList } from '@/hooks/use-admin-list'
 import { useModalForm } from '@/hooks/use-modal-form'
@@ -28,7 +34,7 @@ import { useTableFilter } from '@/hooks/use-table-filter'
 import { adminFetch, AdminApiError, toastSuccess, toastError } from '@/lib/admin-api'
 
 // --- DEFAULT IMAGE URL (Fixed for consistency) ---
-const DEFAULT_IMAGE_URL = '/otjmlogo.jpg';
+const DEFAULT_IMAGE_URL = '/otjmlogo.jpg'
 
 interface NewsItem {
   id: string
@@ -38,7 +44,7 @@ interface NewsItem {
   category: string
   imageUrl: string
   published: boolean
-  sourceUrl?: string | null;
+  sourceUrl?: string | null
   author: {
     id: string
     name: string
@@ -52,7 +58,7 @@ const categoryLabels = {
   protests: 'Protestations',
   statements: 'Déclarations',
   announcements: 'Annonces',
-  updates: 'Mises à jour'
+  updates: 'Mises à jour',
 }
 
 const initialFormData = {
@@ -62,16 +68,21 @@ const initialFormData = {
   category: 'announcements',
   imageUrl: '',
   sourceUrl: '',
-  published: true
+  published: true,
 }
 
 export default function NewsManagement() {
-  const { items: news, loading, refetch: fetchNews } = useAdminList<NewsItem>('/api/news', {
+  const {
+    items: news,
+    loading,
+    refetch: fetchNews,
+  } = useAdminList<NewsItem>('/api/news', {
     errorMessage: 'Impossible de charger les actualités.',
-    map: (data) => data.map((item) => ({
-      ...item,
-      sourceUrl: item.sourceUrl || null,
-    })),
+    map: (data) =>
+      data.map((item) => ({
+        ...item,
+        sourceUrl: item.sourceUrl || null,
+      })),
   })
 
   const {
@@ -105,9 +116,9 @@ export default function NewsManagement() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const finalImageUrl = formData.imageUrl.trim() || DEFAULT_IMAGE_URL;
+    const finalImageUrl = formData.imageUrl.trim() || DEFAULT_IMAGE_URL
 
-    const authorId = 'admin';
+    const authorId = 'admin'
 
     try {
       await adminFetch('/api/news', {
@@ -118,14 +129,18 @@ export default function NewsManagement() {
           authorId: authorId, // Use the verified logged-in ID
         },
       })
-      toastSuccess('L\'actualité a été créée.')
+      toastSuccess("L'actualité a été créée.")
       resetModalsAndForm()
       fetchNews()
     } catch (error) {
       if (error instanceof AdminApiError) {
-        toastError(`Impossible de créer l\'actualité. (Vérifiez si l'ID d'auteur existe dans la table User)`)
+        toastError(
+          `Impossible de créer l\'actualité. (Vérifiez si l'ID d'auteur existe dans la table User)`,
+        )
       } else {
-        toastError(`Impossible de créer l\'actualité. (${error instanceof Error ? error.message : 'Erreur inconnue'})`)
+        toastError(
+          `Impossible de créer l\'actualité. (${error instanceof Error ? error.message : 'Erreur inconnue'})`,
+        )
       }
     }
   }
@@ -139,7 +154,7 @@ export default function NewsManagement() {
       category: item.category,
       imageUrl: item.imageUrl || '',
       sourceUrl: item.sourceUrl || '',
-      published: item.published
+      published: item.published,
     })
     setShowEditModal(true)
   }
@@ -155,7 +170,7 @@ export default function NewsManagement() {
 
     if (!selectedNews) return
 
-    const finalImageUrl = formData.imageUrl.trim() || DEFAULT_IMAGE_URL;
+    const finalImageUrl = formData.imageUrl.trim() || DEFAULT_IMAGE_URL
 
     try {
       await adminFetch(`/api/news/${selectedNews.id}`, {
@@ -165,11 +180,11 @@ export default function NewsManagement() {
           imageUrl: finalImageUrl,
         },
       })
-      toastSuccess('L\'actualité a été mise à jour.')
+      toastSuccess("L'actualité a été mise à jour.")
       resetModalsAndForm()
       fetchNews()
     } catch {
-      toastError('Impossible de mettre à jour l\'actualité.')
+      toastError("Impossible de mettre à jour l'actualité.")
     }
   }
 
@@ -180,10 +195,10 @@ export default function NewsManagement() {
 
     try {
       await adminFetch(`/api/news/${id}`, { method: 'DELETE' })
-      toastSuccess('L\'actualité a été supprimée.')
+      toastSuccess("L'actualité a été supprimée.")
       fetchNews()
     } catch {
-      toastError('Impossible de supprimer l\'actualité.')
+      toastError("Impossible de supprimer l'actualité.")
     }
   }
 
@@ -289,9 +304,7 @@ export default function NewsManagement() {
               <FileText className="w-5 h-5" />
               Liste des Actualités ({filteredNews.length})
             </CardTitle>
-            <CardDescription>
-              Gérez toutes les actualités de l'OTJM
-            </CardDescription>
+            <CardDescription>Gérez toutes les actualités de l'OTJM</CardDescription>
           </CardHeader>
           <CardContent>
             {filteredNews.length === 0 ? (
@@ -326,8 +339,8 @@ export default function NewsManagement() {
                           </div>
                           {item.sourceUrl && (
                             <div className="flex items-center gap-1 text-blue-600">
-                                <LinkIcon className="w-4 h-4" />
-                                <span>Source</span>
+                              <LinkIcon className="w-4 h-4" />
+                              <span>Source</span>
                             </div>
                           )}
                         </div>
@@ -368,7 +381,7 @@ export default function NewsManagement() {
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {showEditModal ? 'Modifier l\'actualité' : 'Ajouter une actualité'}
+              {showEditModal ? "Modifier l'actualité" : 'Ajouter une actualité'}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={showEditModal ? handleUpdate : handleSubmit} className="space-y-4">
@@ -377,14 +390,17 @@ export default function NewsManagement() {
               <Input
                 id="title"
                 value={formData.title}
-                onChange={(e) => setFormData({...formData, title: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 required
               />
             </div>
 
             <div>
               <Label htmlFor="category">Catégorie</Label>
-              <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
+              <Select
+                value={formData.category}
+                onValueChange={(value) => setFormData({ ...formData, category: value })}
+              >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -402,7 +418,7 @@ export default function NewsManagement() {
               <Textarea
                 id="excerpt"
                 value={formData.excerpt}
-                onChange={(e) => setFormData({...formData, excerpt: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
                 rows={3}
                 required
               />
@@ -413,31 +429,31 @@ export default function NewsManagement() {
               <Textarea
                 id="content"
                 value={formData.content}
-                onChange={(e) => setFormData({...formData, content: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 rows={6}
                 required
               />
             </div>
 
-            <div className='grid grid-cols-2 gap-4'>
-                <div>
-                    <Label htmlFor="imageUrl">URL de l'image</Label>
-                    <Input
-                        id="imageUrl"
-                        value={formData.imageUrl}
-                        onChange={(e) => setFormData({...formData, imageUrl: e.target.value})}
-                        placeholder={`https://... (Défaut si vide: ${DEFAULT_IMAGE_URL})`}
-                    />
-                </div>
-                <div>
-                    <Label htmlFor="sourceUrl">URL Source Externe</Label>
-                    <Input
-                        id="sourceUrl"
-                        value={formData.sourceUrl}
-                        onChange={(e) => setFormData({...formData, sourceUrl: e.target.value})}
-                        placeholder="https://..."
-                    />
-                </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="imageUrl">URL de l'image</Label>
+                <Input
+                  id="imageUrl"
+                  value={formData.imageUrl}
+                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                  placeholder={`https://... (Défaut si vide: ${DEFAULT_IMAGE_URL})`}
+                />
+              </div>
+              <div>
+                <Label htmlFor="sourceUrl">URL Source Externe</Label>
+                <Input
+                  id="sourceUrl"
+                  value={formData.sourceUrl}
+                  onChange={(e) => setFormData({ ...formData, sourceUrl: e.target.value })}
+                  placeholder="https://..."
+                />
+              </div>
             </div>
 
             <div className="flex items-center gap-2">
@@ -445,7 +461,7 @@ export default function NewsManagement() {
                 type="checkbox"
                 id="published"
                 checked={formData.published}
-                onChange={(e) => setFormData({...formData, published: e.target.checked})}
+                onChange={(e) => setFormData({ ...formData, published: e.target.checked })}
                 className="rounded"
               />
               <Label htmlFor="published">Publié</Label>
@@ -455,11 +471,7 @@ export default function NewsManagement() {
               <Button type="submit" className="bg-[var(--otjm-red)] hover:bg-[var(--otjm-red-dk)]">
                 {showEditModal ? 'Mettre à jour' : 'Créer'}
               </Button>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={resetModalsAndForm}
-              >
+              <Button type="button" variant="outline" onClick={resetModalsAndForm}>
                 Annuler
               </Button>
             </div>
@@ -468,14 +480,9 @@ export default function NewsManagement() {
       </Dialog>
 
       {/* View Modal */}
-      <Modal
-        isOpen={showViewModal}
-        onClose={resetModalsAndForm}
-        title={selectedNews?.title || ''}
-      >
+      <Modal isOpen={showViewModal} onClose={resetModalsAndForm} title={selectedNews?.title || ''}>
         {selectedNews && (
           <div className="space-y-6">
-
             {/* Image Section - FIXED CROPPING ISSUE */}
             {selectedNews.imageUrl && (
               <div className="w-full bg-gray-100 flex items-center justify-center rounded-lg border overflow-hidden">
@@ -488,7 +495,13 @@ export default function NewsManagement() {
             )}
 
             <div className="flex items-center gap-4 text-sm text-gray-500">
-              <Badge className={selectedNews.published ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}>
+              <Badge
+                className={
+                  selectedNews.published
+                    ? 'bg-green-100 text-green-800'
+                    : 'bg-gray-100 text-gray-800'
+                }
+              >
                 {selectedNews.published ? 'Publié' : 'Brouillon'}
               </Badge>
               <Badge className="bg-[var(--otjm-red)]/10 text-[var(--otjm-red-dk)]">
@@ -505,19 +518,19 @@ export default function NewsManagement() {
             </div>
 
             {selectedNews.sourceUrl && (
-                <div className="flex items-center">
-                    <a
-                        href={selectedNews.sourceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
-                    >
-                        <LinkIcon className="w-4 h-4" />
-                        Voir la source externe
-                    </a>
-                </div>
+              <div className="flex items-center">
+                <a
+                  href={selectedNews.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                >
+                  <LinkIcon className="w-4 h-4" />
+                  Voir la source externe
+                </a>
+              </div>
             )}
-            
+
             <div className="prose max-w-none">
               <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">
                 {selectedNews.content}

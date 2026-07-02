@@ -36,7 +36,7 @@ const TEMPLATE = {
 
 export interface CardInput {
   fullName: string
-  cardNumber: number      // rendered zero-padded to 4 digits, like the design's "0162"
+  cardNumber: number // rendered zero-padded to 4 digits, like the design's "0162"
   validUntil: Date
 }
 
@@ -56,8 +56,12 @@ function loadFonts() {
       fs.readFile(path.join(ASSET_DIR, 'fonts', 'Cinzel-Variable.ttf')),
     ])
     return {
-      anton: opentype.parse(antonBuf.buffer.slice(antonBuf.byteOffset, antonBuf.byteOffset + antonBuf.byteLength)),
-      cinzel: opentype.parse(cinzelBuf.buffer.slice(cinzelBuf.byteOffset, cinzelBuf.byteOffset + cinzelBuf.byteLength)),
+      anton: opentype.parse(
+        antonBuf.buffer.slice(antonBuf.byteOffset, antonBuf.byteOffset + antonBuf.byteLength),
+      ),
+      cinzel: opentype.parse(
+        cinzelBuf.buffer.slice(cinzelBuf.byteOffset, cinzelBuf.byteOffset + cinzelBuf.byteLength),
+      ),
     }
   })()
   return fontsPromise
@@ -65,8 +69,13 @@ function loadFonts() {
 
 /** Vector path for `text`, centered horizontally on cx with the baseline at y. */
 function centeredTextPath(
-  font: opentype.Font, text: string, cx: number, baselineY: number,
-  fontSize: number, maxWidth: number, fill: string,
+  font: opentype.Font,
+  text: string,
+  cx: number,
+  baselineY: number,
+  fontSize: number,
+  maxWidth: number,
+  fill: string,
 ): string {
   let size = fontSize
   let width = font.getAdvanceWidth(text, size)
@@ -93,7 +102,13 @@ async function buildOverlaySvg(input: CardInput): Promise<string> {
   const number = formatCardNumber(input.cardNumber)
   // Number: heavy condensed digits filling the badge like the original "0162".
   const numberPath = centeredTextPath(
-    anton, number, b.x + b.w / 2, b.y + b.h - 22, 118, b.w - 36, '#ffffff',
+    anton,
+    number,
+    b.x + b.w / 2,
+    b.y + b.h - 22,
+    118,
+    b.w - 36,
+    '#ffffff',
   )
 
   // Name: Trajan-style caps in the association maroon. Cinzel renders
@@ -101,12 +116,24 @@ async function buildOverlaySvg(input: CardInput): Promise<string> {
   // for trimming — diacritics (é, ï…) are covered by the font.
   const name = input.fullName.trim()
   const namePath = centeredTextPath(
-    cinzel, name, nameArea.cx, nameArea.cy, 52, nameArea.maxWidth, maroon,
+    cinzel,
+    name,
+    nameArea.cx,
+    nameArea.cy,
+    52,
+    nameArea.maxWidth,
+    maroon,
   )
 
   const validity = `Valable jusqu'au ${String(input.validUntil.getMonth() + 1).padStart(2, '0')}/${input.validUntil.getFullYear()}`
   const validityPath = centeredTextPath(
-    cinzel, validity, validityArea.cx, validityArea.cy, 26, 420, '#6d585a',
+    cinzel,
+    validity,
+    validityArea.cx,
+    validityArea.cy,
+    26,
+    420,
+    '#6d585a',
   )
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${TEMPLATE.width}" height="${TEMPLATE.height}">
@@ -132,9 +159,12 @@ export async function generateMemberCard(input: CardInput): Promise<GeneratedCar
   // Print PDF: both sides as JPEG (photographic front compresses far better
   // than PNG) at the artwork's physical size (px / dpi * 72 points).
   const frontJpg = await sharp(path.join(ASSET_DIR, 'card-template-1.png'))
-    .jpeg({ quality: 92 }).toBuffer()
-  const backJpg = await sharp(backPng).flatten({ background: '#ffffff' })
-    .jpeg({ quality: 92 }).toBuffer()
+    .jpeg({ quality: 92 })
+    .toBuffer()
+  const backJpg = await sharp(backPng)
+    .flatten({ background: '#ffffff' })
+    .jpeg({ quality: 92 })
+    .toBuffer()
 
   const doc = await PDFDocument.create()
   const wPt = (TEMPLATE.width / TEMPLATE.dpi) * 72
@@ -144,7 +174,9 @@ export async function generateMemberCard(input: CardInput): Promise<GeneratedCar
     const page = doc.addPage([wPt, hPt])
     page.drawImage(embedded, { x: 0, y: 0, width: wPt, height: hPt })
   }
-  doc.setTitle(`Carte membre OTJM ${formatCardNumber(input.cardNumber)} — ${escapeXml(input.fullName)}`)
+  doc.setTitle(
+    `Carte membre OTJM ${formatCardNumber(input.cardNumber)} — ${escapeXml(input.fullName)}`,
+  )
 
   return { backPng, pdf: Buffer.from(await doc.save()) }
 }

@@ -3,7 +3,9 @@ import { db } from '@/lib/db'
 import { requireAdmin, VALID_STATUSES, VALID_PAYMENT } from '@/lib/auth'
 import { TIER_KEYS } from '@/lib/constants'
 
-interface Context { params: Promise<{ id: string }> }
+interface Context {
+  params: Promise<{ id: string }>
+}
 
 export async function PATCH(req: NextRequest, ctx: Context) {
   const auth = await requireAdmin()
@@ -16,7 +18,8 @@ export async function PATCH(req: NextRequest, ctx: Context) {
 
     // Whitelist fields with validation
     if (data.status && VALID_STATUSES.includes(data.status)) update.status = data.status
-    if (data.paymentStatus && VALID_PAYMENT.includes(data.paymentStatus)) update.paymentStatus = data.paymentStatus
+    if (data.paymentStatus && VALID_PAYMENT.includes(data.paymentStatus))
+      update.paymentStatus = data.paymentStatus
     // Canonical tier keys only — editing a legacy row normalizes it.
     if (data.tier && (TIER_KEYS as string[]).includes(data.tier)) update.tier = data.tier
     if (data.memberStatus) update.memberStatus = String(data.memberStatus).slice(0, 100)

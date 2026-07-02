@@ -5,8 +5,12 @@ const KEY = 'a'.repeat(64) // deterministic 32-byte test key
 
 describe('PII field encryption', () => {
   const original = process.env.FIELD_ENCRYPTION_KEY
-  beforeEach(() => { process.env.FIELD_ENCRYPTION_KEY = KEY })
-  afterEach(() => { process.env.FIELD_ENCRYPTION_KEY = original })
+  beforeEach(() => {
+    process.env.FIELD_ENCRYPTION_KEY = KEY
+  })
+  afterEach(() => {
+    process.env.FIELD_ENCRYPTION_KEY = original
+  })
 
   it('round-trips a value and never stores it readable', () => {
     const ct = encryptField('12345678')!

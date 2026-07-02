@@ -23,7 +23,8 @@ const fr = {
     menuLabel: 'Menu',
   },
   footer: {
-    tagline: "L'Organisation Tunisienne des Jeunes Médecins défend les droits des internes, résidents et médecins débutants en Tunisie.",
+    tagline:
+      "L'Organisation Tunisienne des Jeunes Médecins défend les droits des internes, résidents et médecins débutants en Tunisie.",
     navigation: 'Navigation',
     contact: 'Contact',
     address: 'Apt A 32, 3e étage, Bardo Palace, 2000 Bardo',
@@ -44,7 +45,8 @@ const fr = {
   news: {
     eyebrow: 'OTJM — Communiqués & actualités',
     title: 'Actualités',
-    subtitle: "Communiqués officiels, protestations, déclarations et annonces de l'Organisation Tunisienne des Jeunes Médecins.",
+    subtitle:
+      "Communiqués officiels, protestations, déclarations et annonces de l'Organisation Tunisienne des Jeunes Médecins.",
     filterAll: 'Tout',
     filterSuffix: 's',
     searchPlaceholder: 'Rechercher...',
@@ -60,7 +62,8 @@ const fr = {
   archives: {
     eyebrow: 'OTJM — Documents & historique',
     title: 'Archives',
-    subtitle: "L'ensemble des documents historiques, rapports et communiqués officiels de l'OTJM depuis sa création.",
+    subtitle:
+      "L'ensemble des documents historiques, rapports et communiqués officiels de l'OTJM depuis sa création.",
     filterAll: 'Tout',
     allYears: 'Toutes les années',
     older: 'Plus ancien',
@@ -77,7 +80,8 @@ const fr = {
     eyebrow: 'Campagne 2025–2026',
     title: 'Rejoignez',
     titleAccent: 'le mouvement.',
-    subtitle: "Votre adhésion n'est pas une cotisation. C'est un acte de solidarité professionnelle — un engagement pour des conditions de travail dignes pour tous les jeunes médecins de Tunisie.",
+    subtitle:
+      "Votre adhésion n'est pas une cotisation. C'est un acte de solidarité professionnelle — un engagement pour des conditions de travail dignes pour tous les jeunes médecins de Tunisie.",
     stats: ['1 200+ membres actifs', '12 gouvernorats', 'Campagne active 2025'],
     stepsLabel: 'Comment adhérer',
     stepsTitle: '3 étapes simples',
@@ -86,19 +90,19 @@ const fr = {
       {
         num: '01',
         title: 'Inscription et paiement',
-        desc: "Choisissez votre tarif ci-dessous, remplissez le formulaire et payez en ligne via Flouci (carte ou wallet). Moins de 3 minutes.",
+        desc: 'Choisissez votre tarif ci-dessous, remplissez le formulaire et payez en ligne via Flouci (carte ou wallet). Moins de 3 minutes.',
         action: undefined as { label: string; href: string } | undefined,
       },
       {
         num: '02',
         title: 'Confirmation',
-        desc: "Dès le paiement confirmé, votre adhésion est activée automatiquement et vous recevez un email de confirmation.",
+        desc: 'Dès le paiement confirmé, votre adhésion est activée automatiquement et vous recevez un email de confirmation.',
         action: undefined as { label: string; href: string } | undefined,
       },
       {
         num: '03',
         title: 'Retrait de votre carte',
-        desc: "Retirez votre carte membre officielle aux stands OTJM dans votre faculté. Le calendrier de distribution est publié sur nos réseaux sociaux.",
+        desc: 'Retirez votre carte membre officielle aux stands OTJM dans votre faculté. Le calendrier de distribution est publié sur nos réseaux sociaux.',
         action: undefined as { label: string; href: string } | undefined,
       },
     ],
@@ -112,14 +116,22 @@ const fr = {
         role: 'Externe',
         price: '10',
         description: 'Étudiant en médecine (cycle externe)',
-        bullets: ['Carte membre officielle', 'Accès aux avantages partenaires', 'Représentation nationale'],
+        bullets: [
+          'Carte membre officielle',
+          'Accès aux avantages partenaires',
+          'Représentation nationale',
+        ],
         isPopular: false,
       },
       {
         role: 'Interne / Résident',
         price: '20',
         description: 'Interne hospitalier ou résident en spécialisation',
-        bullets: ['Carte membre officielle', 'Accès aux avantages partenaires', 'Représentation nationale'],
+        bullets: [
+          'Carte membre officielle',
+          'Accès aux avantages partenaires',
+          'Représentation nationale',
+        ],
         isPopular: true,
       },
     ],
@@ -144,7 +156,8 @@ const fr = {
       },
     ],
     ctaTitle: 'Prêt à rejoindre le mouvement ?',
-    ctaDesc: 'Chaque adhésion renforce notre capacité de négociation. Rejoignez les 1 200+ membres actifs.',
+    ctaDesc:
+      'Chaque adhésion renforce notre capacité de négociation. Rejoignez les 1 200+ membres actifs.',
     ctaBtn: 'Adhérer maintenant',
   },
   home: {
@@ -152,7 +165,8 @@ const fr = {
     headlineNormal: 'Médecins au service ',
     headlineAccent: 'du peuple et de la patrie',
     headlineDot: '.',
-    heroDesc: "L'OTJM représente et défend les droits des internes, résidents et médecins débutants en Tunisie.",
+    heroDesc:
+      "L'OTJM représente et défend les droits des internes, résidents et médecins débutants en Tunisie.",
     latestNews: 'Dernières actualités',
     joinOtjm: "Adhérer à l'OTJM",
     statLabels: ['membres actifs', 'gouvernorats', 'Campagne active'],
@@ -171,7 +185,8 @@ const fr = {
     ctaJoinNow: 'Adhérer maintenant →',
     membershipLabel: 'Adhésion 2025–2026',
     membershipTitle: 'Rejoignez le mouvement.',
-    membershipDesc: "Votre adhésion n'est pas une cotisation. C'est un acte de solidarité professionnelle.",
+    membershipDesc:
+      "Votre adhésion n'est pas une cotisation. C'est un acte de solidarité professionnelle.",
     howToJoin: 'Comment adhérer',
     nextStep: 'Étape suivante',
     perYear: '/an',
@@ -179,7 +194,8 @@ const fr = {
     joinTier: 'Adhérer',
     footerNavTitle: 'Navigation',
     footerContactTitle: 'Contact',
-    footerOrgDesc: "L'Organisation Tunisienne des Jeunes Médecins défend les droits des internes, résidents et médecins débutants.",
+    footerOrgDesc:
+      "L'Organisation Tunisienne des Jeunes Médecins défend les droits des internes, résidents et médecins débutants.",
     footerPress: 'Presse',
     footerPressDesc: 'Pour les demandes médias, contactez notre service presse.',
     footerCopyright: '© 2025–2026 OTJM — Organisation Tunisienne des Jeunes Médecins',
@@ -227,7 +243,8 @@ const ar: typeof fr = {
     menuLabel: 'القائمة',
   },
   footer: {
-    tagline: 'المنظمة التونسية للأطباء الشبان تدافع عن حقوق المتدربين والمقيمين والأطباء الناشئين في تونس.',
+    tagline:
+      'المنظمة التونسية للأطباء الشبان تدافع عن حقوق المتدربين والمقيمين والأطباء الناشئين في تونس.',
     navigation: 'التنقل',
     contact: 'التواصل',
     address: 'شقة A 32، الطابق الثالث، قصر باردو، 2000 باردو',
@@ -281,7 +298,8 @@ const ar: typeof fr = {
     eyebrow: 'حملة 2025–2026',
     title: 'انخرط',
     titleAccent: 'في الحركة.',
-    subtitle: 'انخراطك ليس مجرد اشتراك. إنه فعل تضامن مهني — التزام من أجل ظروف عمل كريمة لجميع الأطباء الشبان في تونس.',
+    subtitle:
+      'انخراطك ليس مجرد اشتراك. إنه فعل تضامن مهني — التزام من أجل ظروف عمل كريمة لجميع الأطباء الشبان في تونس.',
     stats: ['أكثر من 1200 عضو نشط', '12 ولاية', 'حملة نشطة 2025'],
     stepsLabel: 'كيفية الانخراط',
     stepsTitle: '3 خطوات بسيطة',
@@ -356,7 +374,8 @@ const ar: typeof fr = {
     headlineNormal: 'أطباء في خدمة ',
     headlineAccent: 'الشعب و الوطن',
     headlineDot: '.',
-    heroDesc: 'المنظمة التونسية للأطباء الشبان تمثّل وتدافع عن حقوق المقيمين والمتربصين والأطباء الناشئين في تونس.',
+    heroDesc:
+      'المنظمة التونسية للأطباء الشبان تمثّل وتدافع عن حقوق المقيمين والمتربصين والأطباء الناشئين في تونس.',
     latestNews: 'آخر الأخبار',
     joinOtjm: 'انخرط في المنظمة',
     statLabels: ['عضو نشط', 'ولاية', 'حملة نشطة'],
@@ -383,7 +402,8 @@ const ar: typeof fr = {
     joinTier: 'انخرط',
     footerNavTitle: 'التنقل',
     footerContactTitle: 'التواصل',
-    footerOrgDesc: 'المنظمة التونسية للأطباء الشبان تدافع عن حقوق المتدربين والمقيمين والأطباء الناشئين في تونس.',
+    footerOrgDesc:
+      'المنظمة التونسية للأطباء الشبان تدافع عن حقوق المتدربين والمقيمين والأطباء الناشئين في تونس.',
     footerPress: 'الإعلام',
     footerPressDesc: 'للطلبات الإعلامية، تواصل مع مكتب الإعلام.',
     footerCopyright: '© 2025–2026 OTJM — المنظمة التونسية للأطباء الشبان',
@@ -437,7 +457,8 @@ function stripLocale(pathname: string): string {
 // Prefix an internal href with /ar when the active language is Arabic.
 // External/anchor hrefs and already-prefixed paths are left untouched.
 export function localeHref(href: string, lang: Lang): string {
-  if (lang !== 'ar' || !href.startsWith('/') || href.startsWith('/ar/') || href === '/ar') return href
+  if (lang !== 'ar' || !href.startsWith('/') || href.startsWith('/ar/') || href === '/ar')
+    return href
   return href === '/' ? '/ar' : '/ar' + href
 }
 
@@ -464,9 +485,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const t = lang === 'ar' ? ar : fr
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
-      {children}
-    </LanguageContext.Provider>
+    <LanguageContext.Provider value={{ lang, setLang, t }}>{children}</LanguageContext.Provider>
   )
 }
 
