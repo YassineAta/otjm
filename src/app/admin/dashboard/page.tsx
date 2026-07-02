@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -52,6 +52,7 @@ export default function AdminDashboard() {
   })
   const [loading, setLoading] = useState(true)
   const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     fetchDashboardStats()
@@ -101,7 +102,9 @@ export default function AdminDashboard() {
   }
 
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/admin' })
+    // Land back on the slug entry (first URL segment) — literal /admin is
+    // cloaked by the middleware once the session cookie is gone.
+    await signOut({ callbackUrl: '/' + pathname.split('/')[1] })
   }
 
   if (loading) {
