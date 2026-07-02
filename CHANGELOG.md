@@ -11,6 +11,36 @@ Chantier de durcissement, performance, sécurité et documentation. Aucune
 modification de la base de données de production tant que le snapshot Atlas
 n'a pas été fourni (phases 4 et 5 gelées).
 
+### Phase 2 — Téléversement de fichiers (archives)
+
+#### Ajouté
+
+- **Téléversement direct admin → Cloudflare R2** pour les archives : bouton
+  de téléversement sur « Image de couverture » (JPEG/PNG/WebP, 5 Mo max) et
+  « Document (PDF) » (25 Mo max) dans le formulaire d'archive. Architecture
+  par URL présignée — le fichier ne transite pas par le serveur (ADR-007,
+  guide de mise en place : `docs/CONFIGURATION_R2.md`).
+- Bibliothèque `src/lib/storage.ts` (validation type/taille, clés d'objet
+  aseptisées et non-écrasables) + route `POST /api/admin/upload` protégée
+  par `requireAdmin()` + composant réutilisable `FileUploadField`.
+- Tests Vitest de la couche stockage (validation, génération de clés,
+  signature d'URL).
+- ADR-007 (stockage R2), ADR-008 (limitation de débit Upstash, phase
+  sécurité) et ADR-009 (sélecteur de paiement Flouci + ClicToPay) dans
+  `docs/DECISIONS_LOG.md`.
+
+#### Corrigé
+
+- Formulaire d'archives : l'image par défaut pointait sur `otjmlogo.jpg`
+  sans slash initial (lien cassé hors racine) ; le client envoyait un
+  `authorId: 'admin'` fantôme que le serveur ignorait (la session fait foi).
+
+#### Sécurité
+
+- CSP `connect-src` élargie au seul hôte `*.r2.cloudflarestorage.com`
+  (nécessaire au PUT présigné) ; l'API de téléversement répond 503 tant que
+  le stockage n'est pas configuré, sans bloquer le reste du formulaire.
+
 ### Phase 1 — Hygiène du code et outillage
 
 #### Ajouté
@@ -27,7 +57,7 @@ n'a pas été fourni (phases 4 et 5 gelées).
 
 #### Modifié
 
-- **ESLint** : la configuration désactivait *toutes* les règles utiles
+- **ESLint** : la configuration désactivait _toutes_ les règles utiles
   (commentaires d'un template). Réactivation des détecteurs de bugs à fort
   signal (`no-debugger` en erreur, `no-unreachable`, `no-redeclare`,
   variables inutilisées et `prefer-const` en avertissement). Les règles

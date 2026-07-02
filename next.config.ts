@@ -37,7 +37,8 @@ const nextConfig: NextConfig = {
               "img-src 'self' blob: data: https:",
               "font-src 'self' https://fonts.gstatic.com",
               "frame-src 'self'",
-              "connect-src 'self'",
+              // R2 : téléversement admin direct navigateur → bucket (URL présignée)
+              "connect-src 'self' https://*.r2.cloudflarestorage.com",
               "frame-ancestors 'none'",
             ].join('; '),
           },

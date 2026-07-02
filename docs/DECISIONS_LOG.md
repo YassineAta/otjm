@@ -40,3 +40,24 @@
 **Context:** zod@4 installed, unused; every route hand-validates differently; mass-assignment found in membership POST.
 **Decision (proposed):** Every POST/PATCH body passes a zod schema (`src/lib/schemas.ts`) before touching Prisma. Schemas double as the source for TS types (`z.infer`) — kills the inline-interface drift (D5).
 **Consequences:** ~15 lines per route replaced by 2; uniform 400 error shape; the only place "what fields exist" is defined.
+
+## ADR-007 — Stockage des fichiers : Cloudflare R2, téléversement présigné (2026-07-02)
+
+**Contexte :** Les admins doivent pouvoir téléverser les documents d'archives (images + PDF) au lieu de coller des URLs externes. Aucun stockage n'existait. Contrainte de pérennité : le site appartient à l'association et survivra au stage — pas de crédits étudiants (GitHub Education : DigitalOcean/Azure expirent avec le statut), compte au nom de l'association.
+**Décision :** Cloudflare R2 — 10 Go gratuits permanents, bande passante sortante gratuite, API S3 standard (compétence transférable). Téléversement **présigné** : le serveur vérifie session admin + type/taille puis signe une URL PUT (5 min) ; les octets vont navigateur → R2 directement, hors de la limite de corps de requête serverless de Vercel.
+**Alternatives :** (a) Vercel Blob — zéro compte supplémentaire mais ~1 Go gratuit et SDK propriétaire ; (b) crédits GitHub Education — rejetés : expirent, liés à un compte personnel ; (c) statu quo URL-externe — ne répond pas au besoin.
+**Conséquences :** 5 variables d'env `R2_*` (voir `docs/CONFIGURATION_R2.md`), CORS à configurer sur le bucket, CSP `connect-src` élargie à `*.r2.cloudflarestorage.com`. Dégradation propre : sans configuration R2, l'API répond 503 explicite et le collage d'URL reste possible. Interdit d'y stocker des données personnelles (bucket public). Migration future = recopier les objets + changer `R2_PUBLIC_BASE_URL` (les URLs sont de simples chaînes en base).
+
+## ADR-008 — Limitation de débit : Upstash Redis (2026-07-02, implémentation en phase sécurité)
+
+**Contexte :** Login, réinitialisation de mot de passe et webhook de paiement sont exposés sans limite d'essais (brute force possible) sur un site en production portant des PII.
+**Décision :** `@upstash/ratelimit` + Upstash Redis (via Vercel Marketplace, palier gratuit permanent) : compteurs partagés entre toutes les instances serverless — seule option réellement efficace sur Vercel.
+**Alternatives :** (a) limiteur en mémoire — rejeté : chaque instance serverless a sa propre mémoire, les compteurs se réinitialisent à froid, protection cosmétique ; (b) WAF Cloudflare — exigerait de déplacer le DNS/proxy hors OVH ; (c) reporter — inacceptable en production.
+**Conséquences :** Un compte Upstash à créer (au nom de l'association), 2 variables d'env, quelques ms de latence sur les routes protégées.
+
+## ADR-009 — Paiement : sélecteur multi-méthodes Flouci + ClicToPay (2026-07-02, structure préparée avant réception des accès)
+
+**Contexte :** Précision fonctionnelle : ClicToPay et Flouci ne sont pas exclusifs — le membre choisira sa méthode au moment de payer (« Paiement par carte » = ClicToPay, portefeuille = Flouci), à la manière du sélecteur de ba9chich.com/fr/topup. L'affiliation ClicToPay passe par la banque de l'association (SMT) et n'est pas encore obtenue. Amende ADR-002 (« Flouci as sole payment gateway ») : Flouci reste la seule méthode _active_ jusqu'à réception des accès.
+**Décision :** Extraire une interface `PaymentProvider` autour du code Flouci existant (sans changement de comportement — la machine à états et le pattern verify-don't-trust d'ADR-002 sont conservés) + squelette d'adaptateur ClicToPay. À la réception des identifiants bancaires : remplir l'adaptateur, ajouter les variables d'env, activer l'option dans le sélecteur — sans refonte.
+**À demander à la banque :** affiliation e-commerce ClicToPay, identifiants API marchand, et **accès à l'environnement de test** (indispensable pour valider avant mise en production).
+**Conséquences :** Le sélecteur de méthode est une décision UI à concevoir dans le tunnel d'adhésion ; chaque méthode garde sa propre vérification serveur du montant ; les événements de paiement tracent la méthode utilisée.

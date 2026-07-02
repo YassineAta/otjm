@@ -28,6 +28,7 @@ import {
   User,
   Link, // Added for linkUrl
 } from 'lucide-react'
+import { FileUploadField } from '@/components/admin/file-upload-field'
 import { useAdminList } from '@/hooks/use-admin-list'
 import { useModalForm } from '@/hooks/use-modal-form'
 import { useTableFilter } from '@/hooks/use-table-filter'
@@ -61,7 +62,7 @@ const categoryLabels = {
 
 const documentTypeOptions = ['Rapport', 'Déclaration', 'Charte', 'Communiqué', 'Autre']
 
-const DEFAULT_IMAGE_URL = 'otjmlogo.jpg'
+const DEFAULT_IMAGE_URL = '/otjmlogo.jpg'
 
 export default function ArchiveManagement() {
   const {
@@ -132,10 +133,10 @@ export default function ArchiveManagement() {
     try {
       await adminFetch('/api/archives', {
         method: 'POST',
+        // authorId vient de la session côté serveur — ne pas l'envoyer.
         body: {
           ...formData,
           imageUrl: finalImageUrl,
-          authorId: 'admin',
         },
       })
       toastSuccess("L'archive a été créée.")
@@ -436,24 +437,22 @@ export default function ArchiveManagement() {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="imageUrl">URL de l'image</Label>
-                <Input
-                  id="imageUrl"
-                  value={formData.imageUrl}
-                  onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                  placeholder="https://..."
-                />
-              </div>
-              <div>
-                <Label htmlFor="linkUrl">URL du lien externe</Label>
-                <Input
-                  id="linkUrl"
-                  value={formData.linkUrl}
-                  onChange={(e) => setFormData({ ...formData, linkUrl: e.target.value })}
-                  placeholder="https://..."
-                />
-              </div>
+              <FileUploadField
+                id="imageUrl"
+                label="Image de couverture"
+                kind="image"
+                scope="archives"
+                value={formData.imageUrl}
+                onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+              />
+              <FileUploadField
+                id="linkUrl"
+                label="Document (PDF) ou lien externe"
+                kind="document"
+                scope="archives"
+                value={formData.linkUrl}
+                onChange={(url) => setFormData({ ...formData, linkUrl: url })}
+              />
             </div>
 
             <div className="flex gap-2 pt-4">
